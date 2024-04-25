@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.service.UserService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,6 +76,15 @@ public class UserController {
         // 현재 유저의 티켓에서 - usedTicketCount 해야함.
         System.out.println("userName = " + userName);
         System.out.println("ticketCount = " + usedTicketCount);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "아이디 중복확인 API", description = "회원가입 할때, 아이디 중복검사 하는 API 입니다.")
+    @GetMapping("/duplicate_confirmation")
+    public ResponseEntity<?> duplicateConfirmation(@RequestParam(value = "user_name") String user_name) {
+        if (userService.hasUserID(user_name)) {
+            throw new DataIntegrityViolationException("사용자 이름이 이미 존재합니다.");
+        }
         return ResponseEntity.ok().build();
     }
 

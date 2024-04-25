@@ -24,6 +24,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public boolean hasUserID(String userName) {
+        Optional<User> user= userRepository.findByUsername(userName);
+        return user.isPresent();
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
