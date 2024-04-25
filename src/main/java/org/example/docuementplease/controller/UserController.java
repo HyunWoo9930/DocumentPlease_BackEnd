@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저의 유료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
-    @PostMapping("/updateUserTickets")
+    @PostMapping("/update_user_tickets")
     public ResponseEntity<?> updateUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedTicketCount") int usedTicketCount) {
@@ -91,7 +91,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
-    @PostMapping("/updateDailyUserTickets")
+    @PostMapping("/update_daily_user_tickets")
     public ResponseEntity<?> updateDailyUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedDailyTicketCount") int usedDailyTicketCount) {
