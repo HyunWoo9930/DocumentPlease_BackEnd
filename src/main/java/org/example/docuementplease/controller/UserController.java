@@ -81,6 +81,9 @@ public class UserController {
             return ResponseEntity.notFound().build();
         } else {
             int tickets = user.get().getTickets() - usedTicketCount;
+            if(tickets < 0 ) {
+                return ResponseEntity.badRequest().body("잔여 티켓 수가 0보다 작습니다.");
+            }
             user.get().setTickets(tickets);
             userService.userSave(user.get());
             return ResponseEntity.ok("남은 티켓 개수는 " + tickets + "개 입니다.");
@@ -97,6 +100,9 @@ public class UserController {
             return ResponseEntity.notFound().build();
         } else {
             int tickets = user.get().getDaily_tickets() - usedDailyTicketCount;
+            if(tickets < 0 ) {
+                return ResponseEntity.badRequest().body("잔여 티켓 수가 0보다 작습니다.");
+            }
             user.get().setDaily_tickets(tickets);
             userService.userSave(user.get());
             return ResponseEntity.ok("남은 무료 티켓 개수는 " + tickets + "개 입니다.");
