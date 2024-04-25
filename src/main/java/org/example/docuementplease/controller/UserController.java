@@ -71,15 +71,36 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "유저의 티켓 수 변경 API", description = "유저의 소모할 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
+    @Operation(summary = "유저의 유료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
     @PostMapping("/updateUserTickets")
     public ResponseEntity<?> updateUserTickets(
-            @RequestParam(value = "user_name") String userName,
+            @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedTicketCount") int usedTicketCount) {
-        // 현재 유저의 티켓에서 - usedTicketCount 해야함.
-        System.out.println("userName = " + userName);
-        System.out.println("ticketCount = " + usedTicketCount);
-        return ResponseEntity.ok().build();
+        Optional<User> user = userService.findUserbyUsername(user_name);
+        if(user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            int tickets = user.get().getTickets() - usedTicketCount;
+            user.get().setTickets(tickets);
+            userService.userSave(user.get());
+            return ResponseEntity.ok("남은 티켓 개수는 " + tickets + "개 입니다.");
+        }
+    }
+
+    @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
+    @PostMapping("/updateDailyUserTickets")
+    public ResponseEntity<?> updateDailyUserTickets(
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "usedDailyTicketCount") int usedDailyTicketCount) {
+        Optional<User> user = userService.findUserbyUsername(user_name);
+        if(user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            int tickets = user.get().getDaily_tickets() - usedDailyTicketCount;
+            user.get().setDaily_tickets(tickets);
+            userService.userSave(user.get());
+            return ResponseEntity.ok("남은 무료 티켓 개수는 " + tickets + "개 입니다.");
+        }
     }
 
     @Operation(summary = "아이디 중복확인 API", description = "회원가입 할때, 아이디 중복검사 하는 API 입니다.")
