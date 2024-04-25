@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Slf4j
 public class UserController {
     private final UserService userService;
 
@@ -46,7 +48,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 접근"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @PostMapping("/join")
+    @PutMapping("/join")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         User registered = userService.registerNewUserAccount(user);
         return ResponseEntity.ok(registered);
@@ -64,4 +66,17 @@ public class UserController {
             return ResponseEntity.ok("delete success");
         }
     }
+
+    @Operation(summary = "유저의 티켓 수 변경 API", description = "유저의 소모할 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
+    @PostMapping("/updateUserTickets")
+    public ResponseEntity<?> updateUserTickets(
+            @RequestParam(value = "user_name") String userName,
+            @RequestParam(value = "usedTicketCount") int usedTicketCount) {
+        // 현재 유저의 티켓에서 - usedTicketCount 해야함.
+        System.out.println("userName = " + userName);
+        System.out.println("ticketCount = " + usedTicketCount);
+        return ResponseEntity.ok().build();
+    }
+
+
 }
