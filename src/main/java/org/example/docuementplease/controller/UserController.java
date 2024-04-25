@@ -7,7 +7,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.User;
+import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +22,11 @@ import java.util.Optional;
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final DocumentService documentService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, DocumentService documentService) {
         this.userService = userService;
+        this.documentService = documentService;
     }
 
     @Operation(summary = "모든 사용자 정보 조회", description = "등록된 모든 사용자의 정보를 조회합니다.")
@@ -42,7 +46,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    //TODO : 중복 로그인 방지
     @Operation(summary = "회원가입 API", description = "새로운 회원을 등록합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 회원가입 완료", content = @Content(schema = @Schema(implementation = User.class))),
@@ -85,6 +88,38 @@ public class UserController {
         if (userService.hasUserID(user_name)) {
             throw new DataIntegrityViolationException("사용자 이름이 이미 존재합니다.");
         }
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "문서 저장 API", description = "문서 저장 API 입니다.")
+    @PostMapping("/save_document")
+    public ResponseEntity<?> saveDocument(
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "document_name") String document_name,
+            @RequestParam(value = "type") String type,
+            @RequestParam(value = "content") String content,
+            @RequestParam(value = "target") String target,
+            @RequestParam(value = "amount") int amount,
+            @RequestParam(value = "text") String text
+    ) {
+        Documents document = new Documents();
+        document.setName(document_name);
+        document.setTarget(target);
+        document.setType(type);
+        document.setAmount(amount);
+        document.setContent(content);
+        document.setText(text);
+
+        Optional<User> user = userService.findUserbyUsername(user_name);
+        if(user.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            user.get().getDocuments().add(document);
+            document.getUsers().add(user.get());
+            documentService.documentSave(document);
+            userService.userSave(user.get());
+        }
+
         return ResponseEntity.ok().build();
     }
 
