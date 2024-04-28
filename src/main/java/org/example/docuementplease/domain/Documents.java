@@ -1,16 +1,17 @@
 package org.example.docuementplease.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Setter
 @Getter
 @Entity
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Documents {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,8 +24,9 @@ public class Documents {
     private int amount;
     private String text;
 
-    @ManyToMany(mappedBy = "documents")
-    private List<User> users = new ArrayList<>();;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Documents() {
     }

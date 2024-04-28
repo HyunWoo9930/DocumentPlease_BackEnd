@@ -1,5 +1,7 @@
 package org.example.docuementplease.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "username", "password", "nick_name" }) })
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"username", "password", "nick_name"})})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,17 +22,16 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private int tickets;
-    private int daily_tickets;
+    private int free_tickets;
+    private int paid_tickets;
+    @Schema(hidden = true)
+    private int daily_tickets = 5;
     private String nick_name;
 
-    @ManyToMany
-    @JoinTable(
-            name = "document_ids",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "document_id")
-    )
-    private List<Documents> documents = new ArrayList<>();;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private List<Documents> documents = new ArrayList<>();
 
     public User() {
     }

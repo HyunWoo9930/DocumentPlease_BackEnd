@@ -71,36 +71,36 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "유저의 유료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
-    @PostMapping("/update_user_tickets")
+    @Operation(summary = "유저의 유료 티켓 수 변경 API", description = "유저의 소모할 유료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
+    @PostMapping("/update_user_paid_tickets")
     public ResponseEntity<?> updateUserTickets(
             @RequestParam(value = "user_name") String user_name,
-            @RequestParam(value = "usedTicketCount") int usedTicketCount) {
+            @RequestParam(value = "usedPaidTicketCount") int usedTicketCount) {
         Optional<User> user = userService.findUserbyUsername(user_name);
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
-            int tickets = user.get().getTickets() - usedTicketCount;
-            if(tickets < 0 ) {
+            int tickets = user.get().getPaid_tickets() - usedTicketCount;
+            if (tickets < 0) {
                 return ResponseEntity.badRequest().body("잔여 티켓 수가 0보다 작습니다.");
             }
-            user.get().setTickets(tickets);
+            user.get().setPaid_tickets(tickets);
             userService.userSave(user.get());
             return ResponseEntity.ok("남은 티켓 개수는 " + tickets + "개 입니다.");
         }
     }
 
-    @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
-    @PostMapping("/update_daily_user_tickets")
+    @Operation(summary = "유저의 당일 무료 티켓 수 변경 API", description = "유저의 소모할 당일 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
+    @PostMapping("/update_user_daily_tickets")
     public ResponseEntity<?> updateDailyUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedDailyTicketCount") int usedDailyTicketCount) {
         Optional<User> user = userService.findUserbyUsername(user_name);
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             int tickets = user.get().getDaily_tickets() - usedDailyTicketCount;
-            if(tickets < 0 ) {
+            if (tickets < 0) {
                 return ResponseEntity.badRequest().body("잔여 티켓 수가 0보다 작습니다.");
             }
             user.get().setDaily_tickets(tickets);
@@ -138,11 +138,11 @@ public class UserController {
         document.setText(text);
 
         Optional<User> user = userService.findUserbyUsername(user_name);
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {
             user.get().getDocuments().add(document);
-            document.getUsers().add(user.get());
+            document.setUser(user.get());
             documentService.documentSave(document);
             userService.userSave(user.get());
         }
