@@ -44,5 +44,10 @@ public class UserService {
     public void userSave(User user) {
         userRepository.save(user);
     }
+
+    public boolean login(String id, String password) {
+        Optional<User> user = userRepository.findByUsername(id);
+        return user.isPresent() && passwordEncoder.matches(password, user.get().getPassword());
+    }
 }
 
