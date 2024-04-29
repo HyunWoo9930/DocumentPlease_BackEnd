@@ -12,6 +12,7 @@ import org.example.docuementplease.domain.User;
 import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,18 @@ public class UserController {
     public ResponseEntity<?> getMemberInfo() {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @Operation(summary = "로그인 API", description = "로그인 시도시, 실제 DB에 있는지 확인후 반환해주는 API 입니다.")
+    @GetMapping("/login")
+    public ResponseEntity<?> login(
+            @RequestParam(value = "id") String user_name,
+            @RequestParam(value = "password") String password
+    ) {
+        if (userService.login(user_name, password)) {
+            return ResponseEntity.ok("로그인 성공");
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디나 비밀번호를 잘못 입력하셨습니다.");
     }
 
     @Operation(summary = "회원가입 API", description = "새로운 회원을 등록합니다.")
