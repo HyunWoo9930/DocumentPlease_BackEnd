@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @Operation(summary = "로그인 API", description = "로그인 시도시, 실제 DB에 있는지 확인후 반환해주는 API 입니다.")
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestParam(value = "id") String user_name,
             @RequestParam(value = "password") String password
@@ -65,7 +65,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 접근"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
-    @PutMapping("/join")
+    @PostMapping("/join")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         User registered = userService.registerNewUserAccount(user);
         return ResponseEntity.ok(registered);
