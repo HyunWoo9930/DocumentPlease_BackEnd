@@ -98,6 +98,7 @@ public class UserController {
             if (tickets < 0) {
                 return ResponseEntity.badRequest().body("잔여 티켓 수가 0보다 작습니다.");
             }
+            System.out.println("");
             user.get().setPaid_tickets(tickets);
             userService.userSave(user.get());
             return ResponseEntity.ok("남은 티켓 개수는 " + tickets + "개 입니다.");
