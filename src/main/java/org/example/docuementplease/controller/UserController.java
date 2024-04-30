@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.User;
+import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -142,26 +143,12 @@ public class UserController {
             @RequestParam(value = "amount") int amount,
             @RequestParam(value = "text") String text
     ) {
-        Documents document = new Documents();
-        document.setName(document_name);
-        document.setTarget(target);
-        document.setType(type);
-        document.setAmount(amount);
-        document.setContent(content);
-        document.setText(text);
-
-        Optional<User> user = userService.findUserbyUsername(user_name);
-        if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            user.get().getDocuments().add(document);
-            document.setUser(user.get());
-            documentService.documentSave(document);
-            userService.userSave(user.get());
+        try {
+            userService.saveDocument(user_name, document_name, type, content, target, text, amount);
+            return ResponseEntity.ok().body("성공적으로 저장하였습니다.");
+        } catch (DocumentSaveException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
-        return ResponseEntity.ok().build();
     }
-
 
 }
