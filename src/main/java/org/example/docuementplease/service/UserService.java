@@ -50,6 +50,36 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public int deductDailyTickets(String userName, int usedDailyTicketCount) {
+        Optional<User> user = findUserbyUsername(userName);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User를 찾지 못하였습니다.");
+        } else {
+            int tickets = user.get().getDaily_tickets() - usedDailyTicketCount;
+            if (tickets < 0) {
+                throw new RuntimeException("잔여 티켓 수가 0보다 작습니다.");
+            }
+            user.get().setDaily_tickets(tickets);
+            userSave(user.get());
+            return tickets;
+        }
+    }
+
+    public int deductPaidTickets(String userName, int usedPaidTicketCount) {
+        Optional<User> user = findUserbyUsername(userName);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User를 찾지 못하였습니다.");
+        } else {
+            int tickets = user.get().getDaily_tickets() - usedPaidTicketCount;
+            if (tickets < 0) {
+                throw new RuntimeException("잔여 티켓 수가 0보다 작습니다.");
+            }
+            user.get().setDaily_tickets(tickets);
+            userSave(user.get());
+            return tickets;
+        }
+    }
+
     public boolean login(String id, String password) {
         Optional<User> user = userRepository.findByUsername(id);
         return user.isPresent() && passwordEncoder.matches(password, user.get().getPassword());

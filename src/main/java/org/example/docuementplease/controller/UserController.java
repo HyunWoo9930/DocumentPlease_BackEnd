@@ -90,17 +90,11 @@ public class UserController {
     public ResponseEntity<?> updateUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedPaidTicketCount") int usedTicketCount) {
-        Optional<User> user = userService.findUserbyUsername(user_name);
-        if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            int tickets = user.get().getPaid_tickets() - usedTicketCount;
-            if (tickets < 0) {
-                return ResponseEntity.badRequest().body("잔여 티켓 수가 0보다 작습니다.");
-            }
-            user.get().setPaid_tickets(tickets);
-            userService.userSave(user.get());
-            return ResponseEntity.ok("남은 티켓 개수는 " + tickets + "개 입니다.");
+        try {
+            int tickets = userService.deductPaidTickets(user_name, usedTicketCount);
+            return ResponseEntity.ok("남은 티켓 수는 " + tickets + "개 입니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
@@ -109,17 +103,11 @@ public class UserController {
     public ResponseEntity<?> updateDailyUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedDailyTicketCount") int usedDailyTicketCount) {
-        Optional<User> user = userService.findUserbyUsername(user_name);
-        if (user.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            int tickets = user.get().getDaily_tickets() - usedDailyTicketCount;
-            if (tickets < 0) {
-                return ResponseEntity.badRequest().body("잔여 티켓 수가 0보다 작습니다.");
-            }
-            user.get().setDaily_tickets(tickets);
-            userService.userSave(user.get());
-            return ResponseEntity.ok("남은 무료 티켓 개수는 " + tickets + "개 입니다.");
+        try {
+            int tickets = userService.deductDailyTickets(user_name, usedDailyTicketCount);
+            return ResponseEntity.ok("남은 티켓 수는 " + tickets + "개 입니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
