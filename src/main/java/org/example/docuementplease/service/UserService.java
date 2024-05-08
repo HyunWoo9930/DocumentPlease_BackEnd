@@ -103,6 +103,32 @@ public class UserService {
         } else {
             throw new DocumentSaveException("user를 찾지 못하였습니다.");
         }
+
+    }
+
+    public int deductFreeTickets(String userName, int usedFreeTicketCount) {
+        Optional<User> user = findUserbyUsername(userName);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User를 찾지 못하였습니다.");
+        } else {
+            int tickets = user.get().getFree_tickets() - usedFreeTicketCount;
+            if (tickets < 0) {
+                throw new RuntimeException("잔여 티켓 수가 0보다 작습니다.");
+            }
+            user.get().setFree_tickets(tickets);
+            userSave(user.get());
+            return tickets;
+        }
+    }
+
+    public int returnFreeTickets(String userName) {
+        Optional<User> user = findUserbyUsername(userName);
+        if (user.isEmpty()) {
+            throw new RuntimeException("User를 찾지 못하였습니다.");
+        } else {
+            int tickets = user.get().getFree_tickets();
+            return tickets;
+        }
     }
 }
 

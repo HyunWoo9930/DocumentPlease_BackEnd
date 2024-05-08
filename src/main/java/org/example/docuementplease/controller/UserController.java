@@ -139,4 +139,29 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
+    @PostMapping("/update_free_user_tickets")
+    public ResponseEntity<?> updateFreeUserTickets(
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "usedFreeTicketCount") int usedFreeTicketCount) {
+        try {
+            int tickets = userService.deductFreeTickets(user_name, usedFreeTicketCount);
+            return ResponseEntity.ok("남은 티켓 수는 " + tickets + "개 입니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "유저의 무료 티켓 수 반환 API", description = "유저가 소유한 무료 티켓 수를 반환해주는 API 입니다.")
+    @GetMapping("/free_user_tickets")
+    public ResponseEntity<?> FreeUserTickets(
+            @RequestParam(value = "user_name") String user_name) {
+        try {
+            int tickets = userService.returnFreeTickets(user_name);
+            return ResponseEntity.ok(tickets);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }
