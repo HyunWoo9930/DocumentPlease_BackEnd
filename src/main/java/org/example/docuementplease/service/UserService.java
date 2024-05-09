@@ -130,5 +130,25 @@ public class UserService {
             return tickets;
         }
     }
+
+    public int returnPaidTickets(String userName) {
+        Optional<User> user = findUserbyUsername(userName);
+        if(user.isEmpty()) {
+            throw new RuntimeException("user를 찾지 못하였습니다.");
+        } else {
+            int tickets = user.get().getPaid_tickets();
+            return tickets;
+        }
+    }
+
+    public int returnFreeAsk(String userName) {
+        Optional<User> user = findUserbyUsername(userName);
+        if(user.isEmpty()) {
+            throw new RuntimeException("user를 찾지 못하였습니다.");
+        } else {
+            int tickets = user.get().getPaid_tickets();
+            return tickets;
+        }
+    }
 }
 
