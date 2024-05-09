@@ -164,4 +164,27 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "유저의 유료 티켓 수 반환 API", description = "유저가 소유한 유료 티켓 수를 반환해주는 API 입니다.")
+    @GetMapping("/user_paid_tickets")
+    public ResponseEntity<?> UserpaidTickets(
+            @RequestParam(value = "user_name") String user_name) {
+        try {
+            int tickets = userService.returnPaidTickets(user_name);
+            return ResponseEntity.ok(tickets);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "당일 무료 질문 횟수 반환 API", description = "유저에게 남은 당일 무료 질문 횟수를 반환해주는 API 입니다.")
+    @GetMapping("/today_free_ask")
+    public ResponseEntity<?> TodayFreeAsk(
+            @RequestParam(value = "user_name") String user_name) {
+        try {
+            int tickets = userService.returnFreeAsk(user_name);
+            return ResponseEntity.ok(tickets);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
