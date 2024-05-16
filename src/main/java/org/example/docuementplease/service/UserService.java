@@ -150,5 +150,17 @@ public class UserService {
             return tickets;
         }
     }
+
+    public List<Documents> returndoc(String user_name, String type) {
+        Optional<User> user = findUserbyUsername(user_name);
+        if(user.isEmpty()) {
+            throw new RuntimeException("user를 찾지 못하였습니다.");
+        } else {
+            Long id = user.get().getId();
+            List<Documents> documents = documentService.returncat(id, type);
+            return documents;
+        }
+    }
 }
+
 
