@@ -187,4 +187,16 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @Operation(summary = "질문 클릭시 모든 항목 반환 API", description = "유저가 저장한 질문을 클릭할 시 상세 내용을 반환해주는 API 입니다.")
+    @GetMapping("/get_document")
+    public ResponseEntity<?> getDocument(@RequestParam(value = "user_name") String user_name) {
+        try {
+            List<Documents> documents = userService.returndoc(user_name);
+            return ResponseEntity.ok(documents);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }

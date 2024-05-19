@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -150,5 +151,14 @@ public class UserService {
             return tickets;
         }
     }
+
+    public List<Documents> returndoc(String userName) {
+        Optional<User> user = userRepository.findByUsername(userName);
+        if(user.isEmpty()){
+            throw new RuntimeException("내용을 불러오지 못했습니다.");
+        }
+        return user.get().getDocuments();
+    }
+
 }
 
