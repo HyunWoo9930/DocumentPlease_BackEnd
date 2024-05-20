@@ -42,6 +42,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "인증되지 않은 접근"),
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     @GetMapping("/user_total_info")
     public ResponseEntity<?> getMemberInfo() {
         List<User> users = userService.getAllUsers();
@@ -50,6 +51,7 @@ public class UserController {
 
     @Operation(summary = "로그인 API", description = "로그인 시도시, 실제 DB에 있는지 확인후 반환해주는 API 입니다.")
     @PostMapping("/login")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> login(
             @RequestParam(value = "id") String user_name,
             @RequestParam(value = "password") String password
@@ -67,6 +69,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "서버 내부 오류")
     })
     @PostMapping("/join")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         User registered = userService.registerNewUserAccount(user);
         return ResponseEntity.ok(registered);
@@ -74,6 +77,7 @@ public class UserController {
 
     @Operation(summary = "회원탈퇴 API", description = "회원을 탈퇴하는 API 입니다.")
     @DeleteMapping("/delete_user")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> deleteUser(
             @RequestParam(value = "user_name") String userName) {
         userService.deleteUser(userName);
@@ -87,6 +91,7 @@ public class UserController {
 
     @Operation(summary = "유저의 유료 티켓 수 변경 API", description = "유저의 소모할 유료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
     @PostMapping("/update_user_paid_tickets")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> updateUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedPaidTicketCount") int usedTicketCount) {
@@ -100,6 +105,7 @@ public class UserController {
 
     @Operation(summary = "유저의 당일 무료 티켓 수 변경 API", description = "유저의 소모할 당일 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
     @PostMapping("/update_user_daily_tickets")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> updateDailyUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedDailyTicketCount") int usedDailyTicketCount) {
@@ -113,6 +119,7 @@ public class UserController {
 
     @Operation(summary = "아이디 중복확인 API", description = "회원가입 할때, 아이디 중복검사 하는 API 입니다.")
     @GetMapping("/duplicate_confirmation")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> duplicateConfirmation(@RequestParam(value = "user_name") String user_name) {
         if (userService.hasUserID(user_name)) {
             throw new DataIntegrityViolationException("사용자 이름이 이미 존재합니다.");
@@ -122,6 +129,7 @@ public class UserController {
 
     @Operation(summary = "문서 저장 API", description = "문서 저장 API 입니다.")
     @PostMapping("/save_document")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> saveDocument(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "document_name") String document_name,
@@ -141,6 +149,7 @@ public class UserController {
 
     @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
     @PostMapping("/update_free_user_tickets")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> updateFreeUserTickets(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "usedFreeTicketCount") int usedFreeTicketCount) {
@@ -154,6 +163,7 @@ public class UserController {
 
     @Operation(summary = "유저의 무료 티켓 수 반환 API", description = "유저가 소유한 무료 티켓 수를 반환해주는 API 입니다.")
     @GetMapping("/free_user_tickets")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> FreeUserTickets(
             @RequestParam(value = "user_name") String user_name) {
         try {
@@ -166,6 +176,7 @@ public class UserController {
 
     @Operation(summary = "유저의 유료 티켓 수 반환 API", description = "유저가 소유한 유료 티켓 수를 반환해주는 API 입니다.")
     @GetMapping("/user_paid_tickets")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> UserpaidTickets(
             @RequestParam(value = "user_name") String user_name) {
         try {
@@ -178,6 +189,7 @@ public class UserController {
 
     @Operation(summary = "당일 무료 질문 횟수 반환 API", description = "유저에게 남은 당일 무료 질문 횟수를 반환해주는 API 입니다.")
     @GetMapping("/today_free_ask")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> TodayFreeAsk(
             @RequestParam(value = "user_name") String user_name) {
         try {
@@ -190,6 +202,7 @@ public class UserController {
 
     @Operation(summary = "카테고리별 문서 반환 API", description = "카테고리 문서를 반환해주는 API 입니다.")
     @GetMapping("/category_documents")
+    @CrossOrigin(origins = "http://223.130.153.51:8080")
     public ResponseEntity<?> categoryDoc(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "type") String type) {
