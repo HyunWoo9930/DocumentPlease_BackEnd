@@ -22,6 +22,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
+@CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
     private final DocumentService documentService;
