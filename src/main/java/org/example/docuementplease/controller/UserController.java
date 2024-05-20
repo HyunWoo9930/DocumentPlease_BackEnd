@@ -199,21 +199,5 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
-    @Operation(summary = "카테고리별 문서 반환 API", description = "카테고리 문서를 반환해주는 API 입니다.")
-    @GetMapping("/category_documents")
-    @CrossOrigin(origins = "http://223.130.153.51:8080")
-    public ResponseEntity<?> categoryDoc(
-            @RequestParam(value = "user_name") String user_name,
-            @RequestParam(value = "type") String type) {
-        try{
-            List<Documents> documents = userService.returndoc(user_name, type);
-            return ResponseEntity.ok(documents);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-
-    }
-
 }
 
