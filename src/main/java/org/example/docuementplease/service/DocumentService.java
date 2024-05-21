@@ -16,12 +16,16 @@ public class DocumentService {
         this.documentRepository = documentRepository;
     }
 
-    public void documentSave(Documents documents) {
-        documentRepository.save(documents);
+    public Documents documentSave(Documents documents) {
+        return documentRepository.save(documents);
     }
 
     public List<Documents> returncat(Long id, String type){
         return documentRepository.findDocumentsByUser_IdAndType(id, type);
+    }
+
+    public Optional<Documents> findDocumentsById(Long id) {
+        return documentRepository.findById(id);
     }
 
 }

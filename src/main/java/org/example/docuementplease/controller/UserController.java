@@ -127,19 +127,33 @@ public class UserController {
     }
 
     @Operation(summary = "문서 저장 API", description = "문서 저장 API 입니다.")
-    @PostMapping("/save_document")
+    @PostMapping("/save_doc_input")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<?> saveDocument(
+    public ResponseEntity<?> saveDocInput(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "document_name") String document_name,
             @RequestParam(value = "type") String type,
-            @RequestParam(value = "content") String content,
             @RequestParam(value = "target") String target,
             @RequestParam(value = "amount") int amount,
             @RequestParam(value = "text") String text
     ) {
         try {
-            userService.saveDocument(user_name, document_name, type, content, target, text, amount);
+            Long id = userService.saveDocInput(user_name, document_name, type, target, text, amount);
+            return ResponseEntity.ok().body("성공적으로 저장하였습니다. doc_id는 " + id + " 입니다.");
+        } catch (DocumentSaveException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "문서 저장 API", description = "문서 저장 API 입니다.")
+    @PostMapping("/save_doc_output")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> saveDocOutput(
+            @RequestParam(value = "doc_id") int doc_id,
+            @RequestParam(value = "content") String content
+    ) {
+        try {
+            userService.saveDocOutput((long) doc_id, content);
             return ResponseEntity.ok().body("성공적으로 저장하였습니다.");
         } catch (DocumentSaveException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

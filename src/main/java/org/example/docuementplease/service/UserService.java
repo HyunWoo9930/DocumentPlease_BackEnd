@@ -85,25 +85,34 @@ public class UserService {
         return user.isPresent() && passwordEncoder.matches(password, user.get().getPassword());
     }
 
-    public void saveDocument(String user_name, String document_name, String type, String content, String target, String text, int amount) {
+    public Long saveDocInput(String user_name, String document_name, String type, String target, String text, int amount) {
         Documents document = new Documents();
         document.setName(document_name);
         document.setTarget(target);
         document.setType(type);
         document.setAmount(amount);
-        document.setContent(content);
         document.setText(text);
 
         Optional<User> user = userRepository.findByUsername(user_name);
         if (user.isPresent()) {
             user.get().getDocuments().add(document);
             document.setUser(user.get());
-            documentService.documentSave(document);
+            document = documentService.documentSave(document);
             userSave(user.get());
+            return document.getId();
         } else {
             throw new DocumentSaveException("user를 찾지 못하였습니다.");
         }
+    }
 
+    public void saveDocOutput(Long doc_id, String content) {
+        Optional<Documents> document = documentService.findDocumentsById(doc_id);
+        if(document.isEmpty()) {
+            throw new DocumentSaveException("문서가 존재하지 않습니다.");
+        } else {
+            document.get().setContent(content);
+            documentService.documentSave(document.get());
+        }
     }
 
     public int deductFreeTickets(String userName, int usedFreeTicketCount) {
