@@ -141,12 +141,12 @@ public class UserService {
         }
     }
 
-    public int returnFreeAsk(String userName) {
+    public int returnDailyFreeAsk(String userName) {
         Optional<User> user = findUserbyUsername(userName);
         if(user.isEmpty()) {
             throw new RuntimeException("user를 찾지 못하였습니다.");
         } else {
-            return user.get().getFree_tickets();
+            return user.get().getDaily_tickets();
         }
     }
 
