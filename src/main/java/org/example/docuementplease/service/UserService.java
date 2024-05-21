@@ -146,8 +146,7 @@ public class UserService {
         if(user.isEmpty()) {
             throw new RuntimeException("user를 찾지 못하였습니다.");
         } else {
-            int tickets = user.get().getPaid_tickets();
-            return tickets;
+            return user.get().getFree_tickets();
         }
     }
 

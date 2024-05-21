@@ -25,11 +25,9 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
-    private final DocumentService documentService;
 
-    public UserController(UserService userService, DocumentService documentService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.documentService = documentService;
     }
 
     @Operation(summary = "모든 사용자 정보 조회", description = "등록된 모든 사용자의 정보를 조회합니다.")
