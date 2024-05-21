@@ -1,10 +1,11 @@
 package org.example.docuementplease.service;
 
+import org.example.docuementplease.domain.DocumentInputResponse;
+import org.example.docuementplease.domain.DocumentOutputResponse;
 import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.repository.UserRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -115,6 +116,8 @@ public class UserService {
         }
     }
 
+
+
     public int deductFreeTickets(String userName, int usedFreeTicketCount) {
         Optional<User> user = findUserbyUsername(userName);
         if (user.isEmpty()) {
@@ -159,15 +162,30 @@ public class UserService {
         }
     }
 
-    public List<Documents> returndoc(String user_name, String type) {
-        Optional<User> user = findUserbyUsername(user_name);
-        if(user.isEmpty()) {
-            throw new RuntimeException("user를 찾지 못하였습니다.");
-        } else {
-            Long id = user.get().getId();
-            List<Documents> documents = documentService.returncat(id, type);
-            return documents;
-        }
+    public List<DocumentInputResponse> returnDocForInput(String user_name, String type) {
+        User user = findUserbyUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+
+        return documentService.returncat(user.getId(), type)
+                .stream().map(document -> {
+                    return new DocumentInputResponse(document.getType(), document.getTarget(), document.getAmount(), document.getText());
+                }).toList();
+    }
+
+    public List<DocumentOutputResponse> returnDocForOutput(String user_name, String type) {
+        User user = findUserbyUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+
+        return documentService.returncat(user.getId(), type)
+                .stream().map(document -> {
+                    return new DocumentOutputResponse(document.getName(), document.getContent());
+                }).toList();
+    }
+
+    public String findId(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+        return user.getUsername();
     }
 }
 
