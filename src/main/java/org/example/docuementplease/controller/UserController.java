@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.example.docuementplease.domain.DocumentInputResponse;
+import org.example.docuementplease.domain.DocumentOutputResponse;
 import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
@@ -213,20 +215,51 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "카테고리별 문서 반환 API", description = "카테고리 문서를 반환해주는 API 입니다.")
-    @GetMapping("/category_documents")
+    @Operation(summary = "input 카테고리별 문서 반환 API", description = "input 문서를 카테고리별로 반환해주는 API 입니다.")
+    @GetMapping("/category_doc_input")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<?> categoryDoc(
+    // TODO : 반환하고 싶은 것 - type, target, amount, text
+    public ResponseEntity<?> categoryDocInput(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "type") String type) {
         try {
-            List<Documents> documents = userService.returndoc(user_name, type);
+            List<DocumentInputResponse> documents = userService.returnDocForInput(user_name, type);
             return ResponseEntity.ok(documents);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
     }
+    @Operation(summary = "output 카테고리별 문서 반환 API", description = "output 문서를 카테고리별로 반환해주는 API 입니다.")
+    @GetMapping("/category_doc_output")
+    @CrossOrigin(origins = "*")
+    // TODO : 반환하고 싶은 것 - name, content
+    public ResponseEntity<?> categoryDocOutput(
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "type") String type) {
+        try {
+            List<DocumentOutputResponse> documents = userService.returnDocForOutput(user_name, type);
+            return ResponseEntity.ok(documents);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }
+
+    @Operation(summary = "아이디 찾기 API", description = "사용자의 아이디를 반환해주는 API 입니다.")
+    @GetMapping("/find_id")
+    @CrossOrigin(origins = "*")
+    // TODO : 반환하고 싶은 것 - username
+    public ResponseEntity<?> findId(
+            @RequestParam(value = "user_email") String email) {
+        try {
+            String username = userService.findId(email);
+            return ResponseEntity.ok(username);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }
 
