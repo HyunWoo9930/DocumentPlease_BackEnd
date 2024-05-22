@@ -9,6 +9,8 @@ import org.example.docuementplease.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,13 +108,19 @@ public class UserService {
     }
 
     public void saveDocOutput(Long doc_id, String document_name, String content) {
-        Optional<Documents> document = documentService.findDocumentsById(doc_id);
-        if(document.isEmpty()) {
-            throw new DocumentSaveException("문서가 존재하지 않습니다.");
-        } else {
-            document.get().setContent(content);
-            document.get().setName(document_name);
-            documentService.documentSave(document.get());
+        try {
+            String decodedContent = URLDecoder.decode(content, "UTF-8");
+            System.out.println("decodedContent = " + decodedContent);
+            Optional<Documents> document = documentService.findDocumentsById(doc_id);
+            if (document.isEmpty()) {
+                throw new DocumentSaveException("문서가 존재하지 않습니다.");
+            } else {
+                document.get().setContent(decodedContent);
+                document.get().setName(document_name);
+                documentService.documentSave(document.get());
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
     }
 
