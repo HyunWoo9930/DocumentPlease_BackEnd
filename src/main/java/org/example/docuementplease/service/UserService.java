@@ -108,6 +108,17 @@ public class UserService {
         }
     }
 
+    public void changePassword(String user_name, String new_password) {
+        User user = userRepository.findByUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+        if(passwordEncoder.matches(new_password, user.getPassword())) {
+            throw new RuntimeException("새로운 비밀번호가 동일합니다.");
+        } else {
+            user.setPassword(passwordEncoder.encode(new_password));
+            userRepository.save(user);
+        }
+    }
+
     public void saveDocOutput(Long doc_id, String document_name, String content, String user_name) {
         User user = findUserbyUsername(user_name)
                 .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
@@ -116,19 +127,14 @@ public class UserService {
                 Documents::getName
         ).toList();
 
-        System.out.println("nameList = " + nameList);
         String unique_name = document_name;
 
         int num = 0;
-        for(int i = 0; i < nameList.size(); i++) {
-            if(nameList.get(i) != null && nameList.get(i).equals(unique_name)) {
+        for (int i = 0; i < nameList.size(); i++) {
+            if (nameList.get(i) != null && nameList.get(i).equals(unique_name)) {
                 unique_name = document_name + " - (" + ++num + ")";
             }
         }
-
-        System.out.println("unique_name = " + unique_name);
-
-
 
         try {
             String decodedContent = URLDecoder.decode(content, "UTF-8");

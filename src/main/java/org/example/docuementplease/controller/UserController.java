@@ -9,10 +9,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.example.docuementplease.domain.DocumentInputResponse;
 import org.example.docuementplease.domain.DocumentOutputResponse;
-import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
-import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -162,6 +160,23 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @Operation(summary = "비밀번호 변경 API", description = "비밀번호 변경하는 API입니다. 만약 전과 똑같다면, 같은 비밀번호로 만들 수 없다고 반환해줍니다.")
+    @PostMapping("/change_password")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> changePassword(
+            @RequestParam(value = "new_password") String new_password,
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            userService.changePassword(user_name, new_password);
+            return ResponseEntity.status(HttpStatus.OK).body("정상적으로 변경하였습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
 
     @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
     @PostMapping("/update_free_user_tickets")
