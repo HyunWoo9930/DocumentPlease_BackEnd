@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.example.docuementplease.domain.DocumentInputResponse;
 import org.example.docuementplease.domain.DocumentOutputResponse;
+import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
+import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -25,9 +27,10 @@ import java.util.Optional;
 @CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
-
-    public UserController(UserService userService) {
+    private final DocumentService documentService;
+    public UserController(UserService userService, DocumentService documentService) {
         this.userService = userService;
+        this.documentService = documentService;
     }
 
     @Operation(summary = "모든 사용자 정보 조회", description = "등록된 모든 사용자의 정보를 조회합니다.")
@@ -276,6 +279,19 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "문서 삭제 API", description = "원하는 문서를 삭제해주는 API입니다.")
+    @DeleteMapping("/delete_document")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> deleteDocument(
+            @RequestParam(value = "doc_id") Long id){
+        documentService.deletedoc(id);
+        Optional<Documents> documents = documentService.findDocumentsById(id);
+        if (documents.isPresent()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok("delete success");
+        }
+    }
 
 }
 
