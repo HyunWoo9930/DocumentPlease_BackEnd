@@ -32,8 +32,8 @@ public class DocumentService {
         return documentRepository.findAllByUser_Id(user_id);
     }
 
-    public void deletedoc(Long id){
-        documentRepository.deleteDocumentsById(id);
+    public void deletedoc(Long id, String name){
+        documentRepository.deleteDocumentsByUser_IdAndName(id, name);
     }
 }
 

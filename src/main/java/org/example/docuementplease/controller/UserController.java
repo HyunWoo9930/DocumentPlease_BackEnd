@@ -283,8 +283,9 @@ public class UserController {
     @DeleteMapping("/delete_document")
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> deleteDocument(
-            @RequestParam(value = "doc_id") Long id){
-        documentService.deletedoc(id);
+            @RequestParam(value = "user_id") Long id,
+            @RequestParam(value = "doc_name") String name){
+        documentService.deletedoc(id, name);
         Optional<Documents> documents = documentService.findDocumentsById(id);
         if (documents.isPresent()) {
             return ResponseEntity.notFound().build();
