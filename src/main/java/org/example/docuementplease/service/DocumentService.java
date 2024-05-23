@@ -28,6 +28,9 @@ public class DocumentService {
         return documentRepository.findById(id);
     }
 
+    public List<Documents> findDocumentsByUserId(Long user_id) {
+        return documentRepository.findAllByUser_Id(user_id);
+    }
 }
 
 

@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class UserService {
@@ -33,7 +34,7 @@ public class UserService {
     }
 
     public boolean hasUserID(String userName) {
-        Optional<User> user= userRepository.findByUsername(userName);
+        Optional<User> user = userRepository.findByUsername(userName);
         return user.isPresent();
     }
 
@@ -107,23 +108,42 @@ public class UserService {
         }
     }
 
-    public void saveDocOutput(Long doc_id, String document_name, String content) {
+    public void saveDocOutput(Long doc_id, String document_name, String content, String user_name) {
+        User user = findUserbyUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+
+        List<String> nameList = documentService.findDocumentsByUserId(user.getId()).stream().map(
+                Documents::getName
+        ).toList();
+
+        System.out.println("nameList = " + nameList);
+        String unique_name = document_name;
+
+        int num = 0;
+        for(int i = 0; i < nameList.size(); i++) {
+            if(nameList.get(i) != null && nameList.get(i).equals(unique_name)) {
+                unique_name = document_name + " - (" + ++num + ")";
+            }
+        }
+
+        System.out.println("unique_name = " + unique_name);
+
+
+
         try {
             String decodedContent = URLDecoder.decode(content, "UTF-8");
-            System.out.println("decodedContent = " + decodedContent);
             Optional<Documents> document = documentService.findDocumentsById(doc_id);
             if (document.isEmpty()) {
                 throw new DocumentSaveException("문서가 존재하지 않습니다.");
             } else {
                 document.get().setContent(decodedContent);
-                document.get().setName(document_name);
+                document.get().setName(unique_name);
                 documentService.documentSave(document.get());
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
-
 
 
     public int deductFreeTickets(String userName, int usedFreeTicketCount) {
@@ -153,7 +173,7 @@ public class UserService {
 
     public int returnPaidTickets(String userName) {
         Optional<User> user = findUserbyUsername(userName);
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             throw new RuntimeException("user를 찾지 못하였습니다.");
         } else {
             int tickets = user.get().getPaid_tickets();
@@ -163,7 +183,7 @@ public class UserService {
 
     public int returnDailyFreeAsk(String userName) {
         Optional<User> user = findUserbyUsername(userName);
-        if(user.isEmpty()) {
+        if (user.isEmpty()) {
             throw new RuntimeException("user를 찾지 못하였습니다.");
         } else {
             return user.get().getDaily_tickets();

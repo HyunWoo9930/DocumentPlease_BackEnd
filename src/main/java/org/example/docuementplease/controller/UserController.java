@@ -152,10 +152,11 @@ public class UserController {
     public ResponseEntity<?> saveDocOutput(
             @RequestParam(value = "doc_id") int doc_id,
             @RequestParam(value = "document_name") String document_name,
-            @RequestParam(value = "content") String content
+            @RequestParam(value = "content") String content,
+            @RequestParam(value = "user_name") String user_name
     ) {
         try {
-            userService.saveDocOutput((long) doc_id, document_name, content);
+            userService.saveDocOutput((long) doc_id, document_name, content, user_name);
             return ResponseEntity.ok().body("성공적으로 저장하였습니다.");
         } catch (DocumentSaveException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
