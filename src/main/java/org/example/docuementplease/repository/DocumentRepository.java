@@ -13,5 +13,5 @@ public interface DocumentRepository  extends JpaRepository<Documents, Long> {
     List<Documents> findAllByUser_Id(Long user_id);
 
     @Transactional
-    void deleteDocumentsById(Long id);
+    void deleteDocumentsByUser_IdAndName(Long id, String name);
 }
