@@ -31,6 +31,10 @@ public class DocumentService {
     public List<Documents> findDocumentsByUserId(Long user_id) {
         return documentRepository.findAllByUser_Id(user_id);
     }
+
+    public void deletedoc(Long id){
+        documentRepository.deleteDocumentsById(id);
+    }
 }
 
 
