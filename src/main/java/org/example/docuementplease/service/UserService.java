@@ -6,12 +6,21 @@ import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.repository.UserRepository;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.webjars.NotFoundException;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -231,6 +240,57 @@ public class UserService {
         documentService.deleteDoc(user.getId(), name);
         if (documentService.findDocumentByNameAndUserId(name, user.getId()).isPresent()) {
             throw new RuntimeException("삭제가 되지 않았습니다.");
+        }
+    }
+
+    public void saveProfileImage(MultipartFile file, String user_name) throws IOException {
+        Path uploadPath = Paths.get("./profile/" + user_name);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        String fileName = file.getOriginalFilename();
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
+        user.setProfileUrl(filePath.toString());
+        userSave(user);
+    }
+
+    public void updateProfileImage(MultipartFile file, String userName) throws IOException {
+        Optional<User> userOptional = userRepository.findByUsername(userName);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            Path oldFilePath = Paths.get(user.getProfileUrl());
+            Files.deleteIfExists(oldFilePath);
+
+            String fileName = file.getOriginalFilename();
+            Path newFilePath = Paths.get("./profile/" + userName).resolve(fileName);
+            Files.copy(file.getInputStream(), newFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+            user.setProfileUrl(newFilePath.toString());
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found with username: " + userName);
+        }
+    }
+
+    public Resource loadProfileImage(String user_name) throws MalformedURLException {
+        Optional<User> user = userRepository.findByUsername(user_name);
+        if (user.isPresent()) {
+            Path filePath = Paths.get(user.get().getProfileUrl());
+            System.out.println("filePath = " + filePath);
+            Resource resource = new UrlResource(filePath.toUri());
+            System.out.println("resource = " + resource);
+            if (resource.exists() && resource.isReadable()) {
+                return resource;
+            } else {
+                throw new RuntimeException("Could not read file: " + filePath);
+            }
+        } else {
+            throw new RuntimeException("User not found with id: " + user_name);
         }
     }
 }

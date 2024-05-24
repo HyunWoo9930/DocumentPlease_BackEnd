@@ -1,25 +1,32 @@
 package org.example.docuementplease.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.example.docuementplease.domain.DocumentInputResponse;
-import org.example.docuementplease.domain.DocumentOutputResponse;
-import org.example.docuementplease.domain.Documents;
-import org.example.docuementplease.domain.User;
+import org.example.docuementplease.domain.*;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.AbstractPersistable_;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -290,6 +297,62 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @Operation(summary = "프로필 업로드 API", description = "프로필 업로드 API 입니다.")
+    @PostMapping(value = "/upload_profile",consumes = "multipart/form-data")
+    public ResponseEntity<?> uploadProfile(
+            @Parameter(name = "file", description = "업로드 사진 데이터")
+            @RequestParam(value = "file") MultipartFile file,
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            userService.saveProfileImage(file, user_name);
+            return ResponseEntity.ok("저장 완료");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "프로필 업로드 API", description = "프로필 업로드 API 입니다.")
+    @PostMapping(value = "/update_profile",consumes = "multipart/form-data")
+    public ResponseEntity<?> updateProfile(
+            @Parameter(name = "file", description = "업로드 사진 데이터")
+            @RequestParam(value = "file") MultipartFile file,
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            userService.updateProfileImage(file, user_name);
+            return ResponseEntity.ok("수정 완료");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "프로필 반환 API", description = "프로필 반환 API 입니다.")
+    @GetMapping("/get_profile")
+    public ResponseEntity<?> getProfile(
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            Resource file = userService.loadProfileImage(user_name);
+            String contentType = Files.probeContentType(Paths.get(file.getURI()));
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                    .body(file);
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+
+
 
 }
 

@@ -27,6 +27,7 @@ public class User {
     @Schema(hidden = true)
     private int daily_tickets = 5;
     private String nick_name;
+    private String profileUrl;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
