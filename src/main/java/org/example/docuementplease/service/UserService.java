@@ -251,6 +251,11 @@ public class UserService {
 
         String fileName = file.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
+
+        if (Files.list(uploadPath).findAny().isPresent()) {
+            throw new IOException("이미 다른 프로필 사진이 존재합니다.");
+        }
+
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
         User user = userRepository.findByUsername(user_name).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
