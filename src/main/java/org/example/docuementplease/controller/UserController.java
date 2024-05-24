@@ -170,6 +170,8 @@ public class UserController {
         }
     }
 
+
+
     @Operation(summary = "비밀번호 변경 API", description = "비밀번호 변경하는 API입니다. 만약 전과 똑같다면, 같은 비밀번호로 만들 수 없다고 반환해줍니다.")
     @PutMapping("/change_password")
     @CrossOrigin(origins = "*")
@@ -361,6 +363,17 @@ public class UserController {
         }
     }
 
+    @PutMapping("/update_count")
+    public ResponseEntity<?> updateDocumentCreateCount(
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            int count = userService.updateDocumentCreateCount(user_name);
+            return ResponseEntity.ok("문서 생성 횟수 : " + count + " 회 입니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 }
 

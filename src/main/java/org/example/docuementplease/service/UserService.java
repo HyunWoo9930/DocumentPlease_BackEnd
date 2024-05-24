@@ -98,6 +98,14 @@ public class UserService {
         return user.isPresent() && passwordEncoder.matches(password, user.get().getPassword());
     }
 
+    public int updateDocumentCreateCount(String user_name) {
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        int originCount = user.getDocument_create_count() + 1;
+        user.setDocument_create_count(originCount);
+        userSave(user);
+        return originCount;
+    }
+
     public Long saveDocInput(String user_name, String type, String target, String text, int amount) {
         Documents document = new Documents();
         document.setTarget(target);
@@ -287,7 +295,7 @@ public class UserService {
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
-            if(user.getProfileUrl() == null) {
+            if (user.getProfileUrl() == null) {
                 throw new IOException("프로필 사진이 존재하지 않습니다. username : " + user_name);
             }
 

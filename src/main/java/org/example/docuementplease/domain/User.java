@@ -1,7 +1,6 @@
 package org.example.docuementplease.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,6 +27,7 @@ public class User {
     private int daily_tickets = 5;
     private String nick_name;
     private String profileUrl;
+    private int document_create_count;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
