@@ -8,12 +8,12 @@ import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class UserService {
@@ -111,7 +111,7 @@ public class UserService {
     public void changePassword(String user_name, String new_password) {
         User user = userRepository.findByUsername(user_name)
                 .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
-        if(passwordEncoder.matches(new_password, user.getPassword())) {
+        if (passwordEncoder.matches(new_password, user.getPassword())) {
             throw new RuntimeException("새로운 비밀번호가 동일합니다.");
         } else {
             user.setPassword(passwordEncoder.encode(new_password));
@@ -220,6 +220,18 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
         return user.getUsername();
+    }
+
+
+    public void deleteDoc(String user_name, String name) {
+        User user = findUserbyUsername(user_name).orElseThrow(() -> new NotFoundException("유저를 찾지 못하였습니다."));
+        if (documentService.findDocumentByNameAndUserId(name, user.getId()).isEmpty()) {
+            throw new NotFoundException("문서가 존재하지 않습니다.");
+        }
+        documentService.deleteDoc(user.getId(), name);
+        if (documentService.findDocumentByNameAndUserId(name, user.getId()).isPresent()) {
+            throw new RuntimeException("삭제가 되지 않았습니다.");
+        }
     }
 }
 

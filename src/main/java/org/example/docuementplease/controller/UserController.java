@@ -15,6 +15,7 @@ import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.domain.AbstractPersistable_;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,15 +23,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
 @Slf4j
 @CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
-    private final DocumentService documentService;
-    public UserController(UserService userService, DocumentService documentService) {
+
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.documentService = documentService;
     }
 
     @Operation(summary = "모든 사용자 정보 조회", description = "등록된 모든 사용자의 정보를 조회합니다.")
@@ -180,7 +182,6 @@ public class UserController {
     }
 
 
-
     @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
     @PostMapping("/update_free_user_tickets")
     @CrossOrigin(origins = "*")
@@ -237,7 +238,6 @@ public class UserController {
     @Operation(summary = "input 카테고리별 문서 반환 API", description = "input 문서를 카테고리별로 반환해주는 API 입니다.")
     @GetMapping("/category_doc_input")
     @CrossOrigin(origins = "*")
-    // TODO : 반환하고 싶은 것 - type, target, amount, text
     public ResponseEntity<?> categoryDocInput(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "type") String type) {
@@ -249,10 +249,10 @@ public class UserController {
         }
 
     }
+
     @Operation(summary = "output 카테고리별 문서 반환 API", description = "output 문서를 카테고리별로 반환해주는 API 입니다.")
     @GetMapping("/category_doc_output")
     @CrossOrigin(origins = "*")
-    // TODO : 반환하고 싶은 것 - name, content
     public ResponseEntity<?> categoryDocOutput(
             @RequestParam(value = "user_name") String user_name,
             @RequestParam(value = "type") String type) {
@@ -268,7 +268,6 @@ public class UserController {
     @Operation(summary = "아이디 찾기 API", description = "사용자의 아이디를 반환해주는 API 입니다.")
     @GetMapping("/find_id")
     @CrossOrigin(origins = "*")
-    // TODO : 반환하고 싶은 것 - username
     public ResponseEntity<?> findId(
             @RequestParam(value = "user_email") String email) {
         try {
@@ -281,16 +280,14 @@ public class UserController {
 
     @Operation(summary = "문서 삭제 API", description = "원하는 문서를 삭제해주는 API입니다.")
     @DeleteMapping("/delete_document")
-    @CrossOrigin(origins = "*")
     public ResponseEntity<?> deleteDocument(
-            @RequestParam(value = "user_id") Long id,
-            @RequestParam(value = "doc_name") String name){
-        documentService.deletedoc(id, name);
-        Optional<Documents> documents = documentService.findDocumentsById(id);
-        if (documents.isPresent()) {
-            return ResponseEntity.notFound().build();
-        } else {
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "doc_name") String name) {
+        try {
+            userService.deleteDoc(user_name, name);
             return ResponseEntity.ok("delete success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

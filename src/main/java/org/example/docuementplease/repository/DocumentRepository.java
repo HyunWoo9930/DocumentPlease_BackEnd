@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface DocumentRepository  extends JpaRepository<Documents, Long> {
+public interface DocumentRepository extends JpaRepository<Documents, Long> {
     List<Documents> findDocumentsByUser_IdAndType(Long user_id, String type);
+
     List<Documents> findAllByUser_Id(Long user_id);
 
     @Transactional
     void deleteDocumentsByUser_IdAndName(Long id, String name);
+
+    Optional<Documents> findDocumentsByNameAndUser_Id(String name, Long id);
 }

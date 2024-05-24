@@ -1,7 +1,6 @@
 package org.example.docuementplease.service;
 
 import org.example.docuementplease.domain.Documents;
-import org.example.docuementplease.domain.User;
 import org.example.docuementplease.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,7 @@ public class DocumentService {
         return documentRepository.save(documents);
     }
 
-    public List<Documents> returncat(Long id, String type){
+    public List<Documents> returncat(Long id, String type) {
         return documentRepository.findDocumentsByUser_IdAndType(id, type);
     }
 
@@ -32,8 +31,12 @@ public class DocumentService {
         return documentRepository.findAllByUser_Id(user_id);
     }
 
-    public void deletedoc(Long id, String name){
+    public void deleteDoc(Long id, String name) {
         documentRepository.deleteDocumentsByUser_IdAndName(id, name);
+    }
+
+    public Optional<Documents> findDocumentByNameAndUserId(String name, Long id) {
+        return documentRepository.findDocumentsByNameAndUser_Id(name, id);
     }
 }
 
