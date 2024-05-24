@@ -277,6 +277,24 @@ public class UserService {
         }
     }
 
+    public void deleteProfileImage(String user_name) throws IOException {
+        Optional<User> userOptional = userRepository.findByUsername(user_name);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            if(user.getProfileUrl() == null) {
+                throw new IOException("프로필 사진이 존재하지 않습니다. username : " + user_name);
+            }
+
+            Path oldFilePath = Paths.get(user.getProfileUrl());
+            Files.deleteIfExists(oldFilePath);
+            user.setProfileUrl(null);
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found with username: " + user_name);
+        }
+    }
+
     public Resource loadProfileImage(String user_name) throws MalformedURLException {
         Optional<User> user = userRepository.findByUsername(user_name);
         if (user.isPresent()) {

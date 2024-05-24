@@ -328,6 +328,19 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "프로필 삭제 API", description = "프로필 삭제 API 입니다.")
+    @DeleteMapping(value = "/delete_profile")
+    public ResponseEntity<?> deleteProfile(
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            userService.deleteProfileImage(user_name);
+            return ResponseEntity.ok("삭제가 완료되었습니다.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @Operation(summary = "프로필 반환 API", description = "프로필 반환 API 입니다.")
     @GetMapping("/get_profile")
     public ResponseEntity<?> getProfile(
