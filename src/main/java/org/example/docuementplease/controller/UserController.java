@@ -2,20 +2,19 @@ package org.example.docuementplease.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.example.docuementplease.domain.*;
+import org.example.docuementplease.domain.DocumentInputResponse;
+import org.example.docuementplease.domain.DocumentOutputResponse;
+import org.example.docuementplease.domain.User;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
-import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.jpa.domain.AbstractPersistable_;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,8 +28,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @Slf4j
@@ -61,7 +58,7 @@ public class UserController {
     }
 
     @Operation(summary = "로그인 API", description = "로그인 시도시, 실제 DB에 있는지 확인후 반환해주는 API 입니다.")
-    @PostMapping("/login")
+    @GetMapping("/login")
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> login(
             @RequestParam(value = "id") String user_name,
@@ -101,7 +98,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저의 유료 티켓 수 변경 API", description = "유저의 소모할 유료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
-    @PostMapping("/update_user_paid_tickets")
+    @PutMapping("/update_user_paid_tickets")
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> updateUserTickets(
             @RequestParam(value = "user_name") String user_name,
@@ -115,7 +112,7 @@ public class UserController {
     }
 
     @Operation(summary = "유저의 당일 무료 티켓 수 변경 API", description = "유저의 소모할 당일 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
-    @PostMapping("/update_user_daily_tickets")
+    @PutMapping("/update_user_daily_tickets")
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> updateDailyUserTickets(
             @RequestParam(value = "user_name") String user_name,
@@ -174,7 +171,7 @@ public class UserController {
     }
 
     @Operation(summary = "비밀번호 변경 API", description = "비밀번호 변경하는 API입니다. 만약 전과 똑같다면, 같은 비밀번호로 만들 수 없다고 반환해줍니다.")
-    @PostMapping("/change_password")
+    @PutMapping("/change_password")
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> changePassword(
             @RequestParam(value = "new_password") String new_password,
@@ -190,7 +187,7 @@ public class UserController {
 
 
     @Operation(summary = "유저의 무료 티켓 수 변경 API", description = "유저의 소모할 무료 티켓을 입력하고, 티켓 수를 줄이는 API 입니다.")
-    @PostMapping("/update_free_user_tickets")
+    @PutMapping("/update_free_user_tickets")
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> updateFreeUserTickets(
             @RequestParam(value = "user_name") String user_name,
@@ -299,7 +296,7 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 업로드 API", description = "프로필 업로드 API 입니다.")
-    @PostMapping(value = "/upload_profile",consumes = "multipart/form-data")
+    @PostMapping(value = "/upload_profile", consumes = "multipart/form-data")
     public ResponseEntity<?> uploadProfile(
             @Parameter(name = "file", description = "업로드 사진 데이터")
             @RequestParam(value = "file") MultipartFile file,
@@ -314,7 +311,7 @@ public class UserController {
     }
 
     @Operation(summary = "프로필 업로드 API", description = "프로필 업로드 API 입니다.")
-    @PostMapping(value = "/update_profile",consumes = "multipart/form-data")
+    @PutMapping(value = "/update_profile", consumes = "multipart/form-data")
     public ResponseEntity<?> updateProfile(
             @Parameter(name = "file", description = "업로드 사진 데이터")
             @RequestParam(value = "file") MultipartFile file,
@@ -363,8 +360,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
-
-
 
 
 }
