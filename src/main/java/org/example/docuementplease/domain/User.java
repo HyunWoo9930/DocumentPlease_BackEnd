@@ -34,6 +34,10 @@ public class User {
     @JsonIgnore
     private List<Documents> documents = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private List<PaymentHistory> paymentHistory = new ArrayList<>();
     public User() {
     }
 

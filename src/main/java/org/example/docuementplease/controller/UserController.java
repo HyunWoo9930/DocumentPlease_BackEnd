@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.example.docuementplease.domain.DocumentInputResponse;
 import org.example.docuementplease.domain.DocumentOutputResponse;
+import org.example.docuementplease.domain.PaymentHistoryResponse;
 import org.example.docuementplease.domain.User;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.service.UserService;
@@ -374,6 +375,35 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+    @Operation(summary = "결제내역 저장 API", description = "결제 내역을 저장해주는 API 입니다.")
+    @PostMapping("/save_payment")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> savePayment(
+            @RequestParam(value = "user_name") String username,
+            @RequestParam(value = "tickets") int tickets,
+            @RequestParam(value = "price") int price) {
+        try {
+            Long id = userService.savePayment(username, tickets, price);
+            return ResponseEntity.ok().body("성공적으로 저장하였습니다. Payment_id는 " + id + " 입니다.");
+        } catch (DocumentSaveException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "사용자 결제 내역 반환 API", description = "사용자의 결제 내역을 반환해주는 API 입니다.")
+    @GetMapping("/return_payment")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> returnPayment(
+            @RequestParam(value = "user_name") String username) {
+        try {
+            List<PaymentHistoryResponse> paymentHistory = userService.returnUserPayment(username);
+            return ResponseEntity.ok(paymentHistory);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }
+
 
 }
 
