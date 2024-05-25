@@ -1,9 +1,6 @@
 package org.example.docuementplease.service;
 
-import org.example.docuementplease.domain.DocumentInputResponse;
-import org.example.docuementplease.domain.DocumentOutputResponse;
-import org.example.docuementplease.domain.Documents;
-import org.example.docuementplease.domain.User;
+import org.example.docuementplease.domain.*;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.repository.UserRepository;
 import org.springframework.core.io.Resource;
@@ -29,12 +26,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final DocumentService documentService;
 
+    private final PaymentService paymentService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, DocumentService documentService, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, DocumentService documentService, PasswordEncoder passwordEncoder, PaymentService paymentService) {
         this.userRepository = userRepository;
         this.documentService = documentService;
         this.passwordEncoder = passwordEncoder;
+        this.paymentService = paymentService;
     }
 
     public User registerNewUserAccount(User user) {
@@ -323,6 +322,33 @@ public class UserService {
         } else {
             throw new RuntimeException("User not found with id: " + user_name);
         }
+    }
+
+    public Long savePayment(String username,int tickets, int price) {
+        PaymentHistory paymentHistory = new PaymentHistory();
+        paymentHistory.setTicket(tickets);
+        paymentHistory.setPrice(price);
+
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isPresent()) {
+            user.get().getPaymentHistory().add(paymentHistory);
+            paymentHistory.setUser(user.get());
+            paymentHistory = paymentService.paymentSave(paymentHistory);
+            userSave(user.get());
+            return paymentHistory.getId();
+        } else {
+            throw new DocumentSaveException("user를 찾지 못하였습니다.");
+        }
+    }
+
+    public List<PaymentHistoryResponse> returnUserPayment(String username) {
+        User user = findUserbyUsername(username)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+
+        return paymentService.returnPaymentHistory(user.getId())
+                .stream().map(history -> {
+                    return new PaymentHistoryResponse(history.getPaid_time(), history.getTicket(), history.getPrice());
+                }).toList();
     }
 }
 
