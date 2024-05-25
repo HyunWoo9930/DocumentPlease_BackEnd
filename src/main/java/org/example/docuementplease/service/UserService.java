@@ -334,6 +334,8 @@ public class UserService {
             user.get().getPaymentHistory().add(paymentHistory);
             paymentHistory.setUser(user.get());
             paymentHistory = paymentService.paymentSave(paymentHistory);
+            int paidTickets = user.get().getPaid_tickets() + tickets;
+            user.get().setPaid_tickets(paidTickets);
             userSave(user.get());
             return paymentHistory.getId();
         } else {
