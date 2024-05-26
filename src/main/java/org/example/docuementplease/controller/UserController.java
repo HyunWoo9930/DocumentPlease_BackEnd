@@ -412,6 +412,19 @@ public class UserController {
 
     }
 
+    @Operation(summary = "무료 티켓 증가 API", description = "사용자의 무료 티켓 수를 증가시키는 API 입니다.")
+    @PutMapping("/plus_tickets")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> plusTickets(
+            @RequestParam(value = "username") String username) {
+        try {
+            int tickets = userService.plusFreeTickets(username);
+            return ResponseEntity.ok("남은 무료 티켓 수는 " + tickets + "개 입니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }
 
 }
 

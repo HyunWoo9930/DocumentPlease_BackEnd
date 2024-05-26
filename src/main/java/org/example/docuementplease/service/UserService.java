@@ -357,6 +357,16 @@ public class UserService {
         User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
         return user.getDocument_create_count();
     }
+
+    public int plusFreeTickets(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+
+        int tickets = user.getFree_tickets() + 1;
+        user.setFree_tickets(tickets);
+        userSave(user);
+        return tickets;
+    }
 }
 
 
