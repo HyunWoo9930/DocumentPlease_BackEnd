@@ -370,7 +370,7 @@ public class UserController {
     ) {
         try {
             int count = userService.updateDocumentCreateCount(user_name);
-            return ResponseEntity.ok("문서 생성 횟수 : " + count + " 회 입니다.");
+            return ResponseEntity.ok(count);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -388,6 +388,14 @@ public class UserController {
         } catch (DocumentSaveException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/document_create_count")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> getDocumentCount(
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        return ResponseEntity.ok(userService.getDocumentCreateCount(user_name));
     }
 
     @Operation(summary = "사용자 결제 내역 반환 API", description = "사용자의 결제 내역을 반환해주는 API 입니다.")

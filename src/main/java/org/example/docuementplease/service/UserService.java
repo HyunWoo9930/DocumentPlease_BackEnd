@@ -352,6 +352,11 @@ public class UserService {
                     return new PaymentHistoryResponse(history.getPaid_time(), history.getTicket(), history.getPrice());
                 }).toList();
     }
+
+    public int getDocumentCreateCount(String user_name) {
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        return user.getDocument_create_count();
+    }
 }
 
 
