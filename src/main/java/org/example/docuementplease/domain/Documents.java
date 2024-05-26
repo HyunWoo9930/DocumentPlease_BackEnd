@@ -26,6 +26,7 @@ public class Documents {
     private String target;
     private int amount;
     private String text;
+    private Boolean isShared;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

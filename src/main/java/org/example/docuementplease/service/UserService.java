@@ -367,6 +367,10 @@ public class UserService {
         userSave(user);
         return tickets;
     }
+
+    public Long getUserId(String user_name) {
+        return userRepository.findByUsername(user_name).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다.")).getId();
+    }
 }
 
 
