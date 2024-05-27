@@ -65,7 +65,7 @@ public class DocumentService {
                     .stream().map(document -> {
                         User user = userRepository.findById(document.getUser().getId())
                                 .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
-                        return new SharedDocuments(document.getName(), user.getUsername(), document.getContent(), document.getTarget(), document.getLike_count());
+                        return new SharedDocuments(document.getName(), user.getUsername(), document.getContent(), document.getTarget(), document.getLike_count(), document.getType());
                     }).toList();
         }
     }
