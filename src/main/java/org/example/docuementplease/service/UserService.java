@@ -88,7 +88,7 @@ public class UserService {
         if (user.isEmpty()) {
             throw new RuntimeException("User를 찾지 못하였습니다.");
         } else {
-            int tickets = user.get().getDaily_tickets() - usedPaidTicketCount;
+            int tickets = user.get().getPaid_tickets() - usedPaidTicketCount;
             if (tickets < 0) {
                 throw new RuntimeException("잔여 티켓 수가 0보다 작습니다.");
             }
