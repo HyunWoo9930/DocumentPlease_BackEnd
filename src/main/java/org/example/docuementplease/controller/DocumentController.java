@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.webjars.NotFoundException;
+
 import java.util.List;
+
 @RestController
 @Slf4j
 @CrossOrigin(origins = "*")
@@ -47,4 +49,35 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @Operation(summary = "좋아요 1 증가 API", description = "좋아요 1 증가하는 API")
+    @PutMapping("/add_like_count")
+    public ResponseEntity<?> updateLikeCount(
+            @RequestParam(value = "doc_name") String doc_name,
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            int count = documentService.updateLikeCount(doc_name, user_name);
+            return ResponseEntity.ok(count);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "문서의 좋아요 수 반환 API", description = "문서의 좋아요 수 반환하는 API")
+    @GetMapping("/get_like_count")
+    public ResponseEntity<?> getLikeCount(
+            @RequestParam(value = "doc_name") String doc_name,
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            int count = documentService.getLikeCount(doc_name, user_name);
+            return ResponseEntity.ok(count);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+
+
 }

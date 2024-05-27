@@ -11,4 +11,5 @@ public class SharedDocuments {
     private String user_name;
     private String target;
     private String content;
+    private int like_count;
 }
