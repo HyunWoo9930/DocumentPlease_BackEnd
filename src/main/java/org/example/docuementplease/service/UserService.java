@@ -1,7 +1,9 @@
 package org.example.docuementplease.service;
 
+import jakarta.transaction.Transactional;
 import org.example.docuementplease.domain.*;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
+import org.example.docuementplease.exceptionHandler.LowerLevelExistException;
 import org.example.docuementplease.repository.UserRepository;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -18,6 +20,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +41,8 @@ public class UserService {
     }
 
     public User registerNewUserAccount(User user) {
+        List<Level> levels = new ArrayList<>(Arrays.asList(Level.values()));
+        user.setLevels(levels);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -324,7 +330,7 @@ public class UserService {
         }
     }
 
-    public Long savePayment(String username,int tickets, int price) {
+    public Long savePayment(String username, int tickets, int price) {
         PaymentHistory paymentHistory = new PaymentHistory();
         paymentHistory.setTicket(tickets);
         paymentHistory.setPrice(price);
@@ -353,13 +359,41 @@ public class UserService {
                 }).toList();
     }
 
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
-    }
-
     public int getDocumentCreateCount(String user_name) {
         User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
         return user.getDocument_create_count();
+    }
+
+    public List<Boolean> getUserLevels(String user_name) {
+        Optional<User> user = userRepository.findByUsername(user_name);
+        if (user.isPresent()) {
+            List<Boolean> isCleared = new ArrayList<>();
+            for (Level level : Level.values()) {
+                isCleared.add(user.get().getLevels().contains(level));
+            }
+            return isCleared;
+        } else {
+            throw new NotFoundException("유저가 존재하지 않습니다.");
+        }
+    }
+
+    @Transactional
+    public void updateUserLevels(String user_name, Level levelToRemove) {
+        User user = userRepository.findByUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
+
+        if(!user.getLevels().contains(levelToRemove)) {
+            throw new RuntimeException("이미 제거된 레벨입니다!");
+        }
+
+        for (Level level : Level.values()) {
+            if (level.compareTo(levelToRemove) < 0 && user.getLevels().contains(level)) {
+                throw new LowerLevelExistException("제거하려는 레벨보다 낮은 레벨이 존재합니다.");
+            }
+        }
+
+        user.removeLevel(levelToRemove);
+        userSave(user);
     }
 
     public int plusFreeTickets(String username) {
@@ -385,7 +419,7 @@ public class UserService {
 
     public String returnGetNickname(String nick_name) {
         Optional<User> user = findUserbyUsername(nick_name);
-        if(user.isEmpty()){
+        if (user.isEmpty()) {
             throw new RuntimeException("닉네임을 설정해주세요.");
         } else {
             return user.get().getNick_name();
@@ -394,7 +428,7 @@ public class UserService {
 
     public void hasEmail(String email) {
         Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()) {
+        if (user.isPresent()) {
             throw new RuntimeException("이메일이 이미 존재합니다.");
         }
     }

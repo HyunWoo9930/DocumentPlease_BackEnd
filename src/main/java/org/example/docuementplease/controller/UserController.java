@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.example.docuementplease.domain.DocumentInputResponse;
-import org.example.docuementplease.domain.DocumentOutputResponse;
-import org.example.docuementplease.domain.PaymentHistoryResponse;
-import org.example.docuementplease.domain.User;
+import org.example.docuementplease.domain.*;
 import org.example.docuementplease.exceptionHandler.DocumentSaveException;
 import org.example.docuementplease.service.UserService;
 import org.springframework.core.io.Resource;
@@ -22,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.webjars.NotFoundException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -465,6 +463,31 @@ public class UserController {
             return ResponseEntity.ok("사용가능한 이메일 입니다.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/get_levels")
+    public ResponseEntity<?> getUserLevels(
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            List<Boolean> levels = userService.getUserLevels(user_name);
+            return ResponseEntity.ok(levels);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update_levels")
+    public ResponseEntity<?> updateUserLevels(
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "level") Level level
+    ) {
+        try {
+            userService.updateUserLevels(user_name, level);
+            return ResponseEntity.ok("성공적으로 삭제완료했습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

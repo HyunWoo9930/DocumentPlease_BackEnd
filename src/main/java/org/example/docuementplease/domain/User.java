@@ -29,6 +29,11 @@ public class User {
     private String profileUrl;
     private int document_create_count;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @Schema(hidden = true)
+    private List<Level> levels = new ArrayList<>();
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     @JsonIgnore
@@ -38,7 +43,26 @@ public class User {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private List<PaymentHistory> paymentHistory = new ArrayList<>();
+
     public User() {
+        levels.add(Level.LEVEL1);
+        levels.add(Level.LEVEL2);
+        levels.add(Level.LEVEL3);
+        levels.add(Level.LEVEL4);
+        levels.add(Level.LEVEL5);
     }
 
+    public void addLevel(Level level) {
+        if (!levels.contains(level)) {
+            levels.add(level);
+        }
+    }
+
+    public void removeLevel(Level level) {
+        levels.remove(level);
+    }
+
+    public boolean hasLevel(Level level) {
+        return levels.contains(level);
+    }
 }
