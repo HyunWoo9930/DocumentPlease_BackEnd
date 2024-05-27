@@ -1,6 +1,8 @@
 package org.example.docuementplease.service;
 
+import org.example.docuementplease.domain.DocumentInputResponse;
 import org.example.docuementplease.domain.Documents;
+import org.example.docuementplease.domain.SharedDocuments;
 import org.example.docuementplease.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -48,6 +50,18 @@ public class DocumentService {
         } else {
             throw new NotFoundException("문서가 존재하지 않습니다.");
         }
+    }
+
+    public List<SharedDocuments> sharedDocuments(Boolean accept){
+        List<Documents> documents = documentRepository.findDocumentsByIsShared(accept);
+        if (documents.isEmpty()){
+            throw new RuntimeException("공유 가능한 문서를 찾지 못하였습니다.");
+        } else {
+            return documents
+                    .stream().map(document -> {
+                        return new SharedDocuments(document.getName(), document.getUser().getId(), document.getContent(), document.getTarget());
+                    }).toList();
+            }
     }
 }
 
