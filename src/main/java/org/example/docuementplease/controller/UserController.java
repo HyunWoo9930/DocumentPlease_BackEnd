@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.SimpleTimeZone;
 
 @RestController
 @Slf4j
@@ -424,6 +425,44 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
+    }
+
+    @Operation(summary = "유저 닉네임 변경 API", description = "유저 닉네임을 변경하는 API 입니다.")
+    @PutMapping("/change_nick_name")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> changeNickName(
+            @RequestParam(value = "nick_name") String nick_name,
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            userService.changeNickName(user_name, nick_name);
+            return ResponseEntity.status(HttpStatus.OK).body("정상적으로 변경하였습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "유저 닉네임 반환 API", description = "유저의 닉네임을 반환해주는 API 입니다.")
+    @GetMapping("/get_nickname")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> GetNickname(
+            @RequestParam(value = "nickname") String nickname) {
+        try {
+            String nick_name = userService.returnGetNickname(nickname);
+            return ResponseEntity.ok(nick_name);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "이메일 중복확인 API", description = "회원가입 할때, 이메일 중복검사 하는 API 입니다.")
+    @GetMapping("/duplicate_email")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> duplicateEmail(@RequestParam(value = "email") String email) {
+        if (userService.hasEmail(email)) {
+            throw new DataIntegrityViolationException("이메일이 이미 존재합니다.");
+        }
+        return ResponseEntity.ok().build();
     }
 
 }
