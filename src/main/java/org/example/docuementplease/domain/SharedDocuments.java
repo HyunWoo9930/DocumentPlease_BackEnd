@@ -8,7 +8,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SharedDocuments {
     private String name;
-    private Long user_id;
+    private String user_name;
     private String target;
     private String content;
 }

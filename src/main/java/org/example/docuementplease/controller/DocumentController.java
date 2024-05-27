@@ -39,11 +39,9 @@ public class DocumentController {
 
     @Operation(summary = "공유 문서 반환 API", description = "공유가 허용된 문서를 반환해주는 API")
     @GetMapping("/shared_documents")
-    public ResponseEntity<?> shareDocuments(
-            @RequestParam(value = "accept") Boolean accept)
-    {
+    public ResponseEntity<?> getShareDocuments() {
         try {
-            List<SharedDocuments> sharedDocuments = documentService.sharedDocuments(accept);
+            List<SharedDocuments> sharedDocuments = documentService.sharedDocuments();
             return ResponseEntity.ok(sharedDocuments);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
