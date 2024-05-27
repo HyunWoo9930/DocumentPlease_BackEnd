@@ -371,6 +371,28 @@ public class UserService {
     public Long getUserId(String user_name) {
         return userRepository.findByUsername(user_name).orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다.")).getId();
     }
+
+    public void changeNickName(String user_name, String nick_name) {
+        User user = userRepository.findByUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+        user.setNick_name(nick_name);
+        userRepository.save(user);
+    }
+
+    public String returnGetNickname(String nick_name) {
+        Optional<User> user = findUserbyUsername(nick_name);
+        if(user.isEmpty()){
+            throw new RuntimeException("닉네임을 설정해주세요.");
+        } else {
+            return user.get().getNick_name();
+        }
+    }
+
+    public boolean hasEmail(String email) {
+        Optional<User> user = userRepository.findByUsername(email);
+        return user.isPresent();
+    }
+
 }
 
 
