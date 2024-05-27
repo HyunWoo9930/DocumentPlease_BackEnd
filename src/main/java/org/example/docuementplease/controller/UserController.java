@@ -464,7 +464,7 @@ public class UserController {
             userService.hasEmail(email);
             return ResponseEntity.ok("사용가능한 이메일 입니다.");
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 
