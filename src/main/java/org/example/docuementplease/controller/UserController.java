@@ -29,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.SimpleTimeZone;
 
 @RestController
 @Slf4j
@@ -171,7 +170,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
 
 
     @Operation(summary = "비밀번호 변경 API", description = "비밀번호 변경하는 API입니다. 만약 전과 똑같다면, 같은 비밀번호로 만들 수 없다고 반환해줍니다.")
@@ -376,6 +374,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
     @Operation(summary = "결제내역 저장 API", description = "결제 내역을 저장해주는 API 입니다.")
     @PostMapping("/save_payment")
     @CrossOrigin(origins = "*")
@@ -446,9 +445,9 @@ public class UserController {
     @GetMapping("/get_nickname")
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> GetNickname(
-            @RequestParam(value = "nickname") String nickname) {
+            @RequestParam(value = "user_name") String user_name) {
         try {
-            String nick_name = userService.returnGetNickname(nickname);
+            String nick_name = userService.returnGetNickname(user_name);
             return ResponseEntity.ok(nick_name);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -458,11 +457,15 @@ public class UserController {
     @Operation(summary = "이메일 중복확인 API", description = "회원가입 할때, 이메일 중복검사 하는 API 입니다.")
     @GetMapping("/duplicate_email")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<?> duplicateEmail(@RequestParam(value = "email") String email) {
-        if (userService.hasEmail(email)) {
-            throw new DataIntegrityViolationException("이메일이 이미 존재합니다.");
+    public ResponseEntity<?> duplicateEmail(
+            @RequestParam(value = "email") String email
+    ) {
+        try {
+            userService.hasEmail(email);
+            return ResponseEntity.ok("사용가능한 이메일 입니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 
 }

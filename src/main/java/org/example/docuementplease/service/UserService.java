@@ -388,9 +388,11 @@ public class UserService {
         }
     }
 
-    public boolean hasEmail(String email) {
-        Optional<User> user = userRepository.findByUsername(email);
-        return user.isPresent();
+    public void hasEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isPresent()) {
+            throw new RuntimeException("이메일이 이미 존재합니다.");
+        }
     }
 
 }
