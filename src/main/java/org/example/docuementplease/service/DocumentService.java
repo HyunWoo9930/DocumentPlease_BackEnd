@@ -1,7 +1,11 @@
 package org.example.docuementplease.service;
 
+import org.example.docuementplease.domain.DocumentInputResponse;
 import org.example.docuementplease.domain.Documents;
+import org.example.docuementplease.domain.User;
+import org.example.docuementplease.domain.SharedDocuments;
 import org.example.docuementplease.repository.DocumentRepository;
+import org.example.docuementplease.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -11,9 +15,11 @@ import java.util.Optional;
 @Service
 public class DocumentService {
     private final DocumentRepository documentRepository;
+    private final UserRepository userRepository;
 
-    public DocumentService(DocumentRepository documentRepository) {
+    public DocumentService(DocumentRepository documentRepository,UserRepository userRepository) {
         this.documentRepository = documentRepository;
+        this.userRepository = userRepository;
     }
 
     public Documents documentSave(Documents documents) {
@@ -48,6 +54,20 @@ public class DocumentService {
         } else {
             throw new NotFoundException("문서가 존재하지 않습니다.");
         }
+    }
+
+    public List<SharedDocuments> sharedDocuments(){
+        List<Documents> documents = documentRepository.findDocumentsByIsShared(true);
+        if (documents.isEmpty()){
+            throw new RuntimeException("공유 가능한 문서를 찾지 못하였습니다.");
+        } else {
+            return documents
+                    .stream().map(document -> {
+                        User user = userRepository.findById(document.getUser().getId())
+                                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+                        return new SharedDocuments(document.getName(), user.getUsername(), document.getContent(), document.getTarget());
+                    }).toList();
+            }
     }
 }
 

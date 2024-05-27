@@ -2,6 +2,7 @@ package org.example.docuementplease.repository;
 
 import jakarta.transaction.Transactional;
 import org.example.docuementplease.domain.Documents;
+import org.example.docuementplease.domain.SharedDocuments;
 import org.example.docuementplease.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -17,4 +18,6 @@ public interface DocumentRepository extends JpaRepository<Documents, Long> {
     void deleteDocumentsByUser_IdAndName(Long id, String name);
 
     Optional<Documents> findDocumentsByNameAndUser_Id(String name, Long id);
+
+    List<Documents> findDocumentsByIsShared(Boolean accept);
 }
