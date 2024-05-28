@@ -2,6 +2,7 @@ package org.example.docuementplease.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
+import org.example.docuementplease.domain.DocumentInputResponse;
 import org.example.docuementplease.domain.SharedDocuments;
 import org.example.docuementplease.service.DocumentService;
 import org.example.docuementplease.service.UserService;
@@ -78,6 +79,16 @@ public class DocumentController {
         }
     }
 
-
+    @GetMapping("/get_document_input")
+    public ResponseEntity<?> getDocumentInput(
+            @RequestParam(value = "doc_input") Long doc_input
+    ) {
+        try {
+            DocumentInputResponse documentInput = documentService.getDocumentInput(doc_input);
+            return ResponseEntity.ok(documentInput);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 }

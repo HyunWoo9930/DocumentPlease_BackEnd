@@ -1,6 +1,7 @@
 package org.example.docuementplease.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.example.docuementplease.domain.DocumentInputResponse;
 import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.SharedDocuments;
 import org.example.docuementplease.domain.User;
@@ -90,6 +91,11 @@ public class DocumentService {
         } else {
             throw new NotFoundException("유저가 존재하지 않습니다.");
         }
+    }
+
+    public DocumentInputResponse getDocumentInput(Long doc_id) {
+        Documents document = documentRepository.findById(doc_id).orElseThrow(() -> new NotFoundException("문서가 존재하지 않습니다."));
+        return new DocumentInputResponse(document.getType(), document.getTarget(), document.getAmount(), document.getText());
     }
 }
 

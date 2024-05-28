@@ -139,7 +139,7 @@ public class UserController {
     ) {
         try {
             Long id = userService.saveDocInput(user_name, type, target, text, amount);
-            return ResponseEntity.ok().body("성공적으로 저장하였습니다. doc_id는 " + id + " 입니다.");
+            return ResponseEntity.ok().body(id);
         } catch (DocumentSaveException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
