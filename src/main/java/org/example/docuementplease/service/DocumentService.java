@@ -1,5 +1,6 @@
 package org.example.docuementplease.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.docuementplease.domain.Documents;
 import org.example.docuementplease.domain.SharedDocuments;
 import org.example.docuementplease.domain.User;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class DocumentService {
     private final DocumentRepository documentRepository;
 
@@ -61,28 +63,20 @@ public class DocumentService {
         if (documents.isEmpty()) {
             throw new RuntimeException("공유 가능한 문서를 찾지 못하였습니다.");
         } else {
-            return documents
-                    .stream().map(document -> {
-                        User user = userRepository.findById(document.getUser().getId())
-                                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
-                        return new SharedDocuments(document.getName(), user.getUsername(), document.getContent(), document.getTarget(), document.getLike_count(), document.getType());
-                    }).toList();
+            return documents.stream().map(document -> {
+                User user = userRepository.findById(document.getUser().getId()).orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+                return new SharedDocuments(document.getName(), user.getUsername(), document.getContent(), document.getTarget(), document.getLike_count(), document.getType());
+            }).toList();
         }
     }
 
     public int updateLikeCount(String doc_name, String user_name) {
-        Optional<User> user = userRepository.findByUsername(user_name);
-        if (user.isPresent()) {
-            Optional<Documents> document = documentRepository.findDocumentsByNameAndUser_Id(doc_name, user.get().getId());
-            if (document.isPresent()) {
-                document.get().setLike_count(document.get().getLike_count() + 1);
-                documentSave(document.get());
-                return document.get().getLike_count();
-            }
-            throw new NotFoundException("문서가 존재하지 않습니다.");
-        } else {
-            throw new NotFoundException("유저가 존재하지 않습니다.");
-        }
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        Documents document = documentRepository.findDocumentsByNameAndUser_Id(doc_name, user.getId()).orElseThrow(() -> new NotFoundException("문서가 존재하지 않습니다."));
+        int count = document.getLike_count() + 1;
+        document.setLike_count(count);
+        documentSave(document);
+        return document.getLike_count();
     }
 
     public int getLikeCount(String doc_name, String user_name) {

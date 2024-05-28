@@ -27,7 +27,7 @@ public class Documents {
     private int amount;
     private String text;
     private Boolean isShared = false;
-    private int like_count = 0;
+    private int like_count;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
