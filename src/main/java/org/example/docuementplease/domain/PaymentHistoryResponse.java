@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @AllArgsConstructor
 public class PaymentHistoryResponse {
-    private LocalDateTime paid_time;
+    private LocalDateTime paidTime;
     private int ticket;
     private int price;
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.webjars.NotFoundException;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @Slf4j
@@ -111,7 +110,7 @@ public class DocumentController {
             @RequestParam("user_name") String user_name
     ) {
         try {
-            AtomicInteger totalLikes = documentService.getTotalLikes(user_name);
+            String totalLikes = documentService.getTotalLikes(user_name);
             return ResponseEntity.ok(totalLikes);
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

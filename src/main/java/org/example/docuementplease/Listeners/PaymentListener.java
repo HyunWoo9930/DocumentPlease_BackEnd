@@ -10,6 +10,6 @@ public class PaymentListener {
     @PrePersist
     public void prePersist(PaymentHistory paymentHistory) {
         LocalDateTime now = LocalDateTime.now();
-        paymentHistory.setPaid_time(now);
+        paymentHistory.setPaidTime(now);
     }
 }

@@ -30,7 +30,7 @@ public class Documents {
     private int amount;
     private String text;
     private Boolean isShared = false;
-    private int like_count;
+    private int likeCount;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

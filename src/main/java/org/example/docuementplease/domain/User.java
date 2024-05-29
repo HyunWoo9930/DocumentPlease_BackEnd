@@ -21,13 +21,14 @@ public class User {
     private String username;
     private String password;
     private String email;
-    private int free_tickets;
-    private int paid_tickets;
+    private int freeTickets;
+    private int paidTickets;
     @Schema(hidden = true)
     private int daily_tickets = 5;
-    private String nick_name;
+    private String nickName;
     private String profileUrl;
     private int document_create_count;
+    private int totalLikes;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)

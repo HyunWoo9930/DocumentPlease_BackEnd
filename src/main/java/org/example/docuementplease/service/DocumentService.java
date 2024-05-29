@@ -10,7 +10,6 @@ import org.webjars.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -68,7 +67,7 @@ public class DocumentService {
         } else {
             return documents.stream().map(document -> {
                 User user = userRepository.findById(document.getUser().getId()).orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
-                return new SharedDocuments(document.getName(), user.getUsername(), document.getContent(), document.getTarget(), document.getLike_count(), document.getType(), document.getComments());
+                return new SharedDocuments(document.getName(), user.getUsername(), document.getContent(), document.getTarget(), document.getLikeCount(), document.getType(), document.getComments());
             }).toList();
         }
     }
@@ -76,10 +75,10 @@ public class DocumentService {
     public int updateLikeCount(String doc_name, String user_name) {
         User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
         Documents document = documentRepository.findDocumentsByNameAndUser_Id(doc_name, user.getId()).orElseThrow(() -> new NotFoundException("문서가 존재하지 않습니다."));
-        int count = document.getLike_count() + 1;
-        document.setLike_count(count);
+        int count = document.getLikeCount() + 1;
+        document.setLikeCount(count);
         documentSave(document);
-        return document.getLike_count();
+        return document.getLikeCount();
     }
 
     public int getLikeCount(String doc_name, String user_name) {
@@ -87,7 +86,7 @@ public class DocumentService {
         if (user.isPresent()) {
             Optional<Documents> document = documentRepository.findDocumentsByNameAndUser_Id(doc_name, user.get().getId());
             if (document.isPresent()) {
-                return document.get().getLike_count();
+                return document.get().getLikeCount();
             }
             throw new NotFoundException("문서가 존재하지 않습니다.");
         } else {
@@ -107,13 +106,40 @@ public class DocumentService {
         documentSave(documents);
     }
 
-    public AtomicInteger getTotalLikes(String user_name) {
-        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
-        AtomicInteger likes = new AtomicInteger();
-        user.getDocuments().forEach((documents -> {
-            likes.addAndGet(documents.getLike_count());
-        }));
+    public void getAllTotalLikes() {
+        List<User> userList = userRepository.findAll();
+        for (User user : userList) {
+            int totalLikes = returnTotalLikes(user);
+            user.setTotalLikes(totalLikes);
+            userRepository.save(user);
+        }
+    }
+
+    public int returnTotalLikes(User user) {
+        int likes = 0;
+        for (Documents documents : user.getDocuments()) {
+            likes += documents.getLikeCount();
+        }
         return likes;
+    }
+
+    public int likeScore(User user) {
+        int score = 1;
+        List<User> all = userRepository.findAll();
+        for (User users : all) {
+            if (users.getTotalLikes() > user.getTotalLikes()) {
+                score++;
+            }
+        }
+        return score;
+    }
+
+    public String getTotalLikes(String user_name) {
+        getAllTotalLikes();
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        int score = likeScore(user);
+        int total = userRepository.findAll().size();
+        return user.getTotalLikes() + " \n" + score + "/" +total;
     }
 
     public void saveRefundedDoc(String content, String sendContent, String user_name) {
@@ -123,7 +149,7 @@ public class DocumentService {
         refundedDocument.setContent(content);
         refundedDocument.setSendContent(sendContent);
         RefundedDocument save = refundedDocumentRepository.save(refundedDocument);
-        if(refundedDocumentRepository.findById(save.getId()).isEmpty()) {
+        if (refundedDocumentRepository.findById(save.getId()).isEmpty()) {
             throw new RuntimeException("저장실패");
         }
     }

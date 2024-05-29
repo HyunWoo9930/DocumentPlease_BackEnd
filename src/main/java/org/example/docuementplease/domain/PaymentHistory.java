@@ -22,7 +22,7 @@ public class PaymentHistory {
     private int price;
 
     @CreatedDate
-    private LocalDateTime paid_time;
+    private LocalDateTime paidTime;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

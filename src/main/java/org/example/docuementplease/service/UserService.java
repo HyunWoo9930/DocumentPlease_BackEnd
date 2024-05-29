@@ -88,7 +88,7 @@ public class UserService {
         if (user.isEmpty()) {
             throw new RuntimeException("User를 찾지 못하였습니다.");
         } else {
-            int tickets = user.get().getPaid_tickets() - usedPaidTicketCount;
+            int tickets = user.get().getPaidTickets() - usedPaidTicketCount;
             if (tickets < 0) {
                 throw new RuntimeException("잔여 티켓 수가 0보다 작습니다.");
             }
@@ -179,11 +179,11 @@ public class UserService {
         if (user.isEmpty()) {
             throw new RuntimeException("User를 찾지 못하였습니다.");
         } else {
-            int tickets = user.get().getFree_tickets() - usedFreeTicketCount;
+            int tickets = user.get().getFreeTickets() - usedFreeTicketCount;
             if (tickets < 0) {
                 throw new RuntimeException("잔여 티켓 수가 0보다 작습니다.");
             }
-            user.get().setFree_tickets(tickets);
+            user.get().setFreeTickets(tickets);
             userSave(user.get());
             return tickets;
         }
@@ -194,7 +194,7 @@ public class UserService {
         if (user.isEmpty()) {
             throw new RuntimeException("User를 찾지 못하였습니다.");
         } else {
-            int tickets = user.get().getFree_tickets();
+            int tickets = user.get().getFreeTickets();
             return tickets;
         }
     }
@@ -204,7 +204,7 @@ public class UserService {
         if (user.isEmpty()) {
             throw new RuntimeException("user를 찾지 못하였습니다.");
         } else {
-            int tickets = user.get().getPaid_tickets();
+            int tickets = user.get().getPaidTickets();
             return tickets;
         }
     }
@@ -340,8 +340,8 @@ public class UserService {
             user.get().getPaymentHistory().add(paymentHistory);
             paymentHistory.setUser(user.get());
             paymentHistory = paymentService.paymentSave(paymentHistory);
-            int paidTickets = user.get().getPaid_tickets() + tickets;
-            user.get().setPaid_tickets(paidTickets);
+            int paidTickets = user.get().getPaidTickets() + tickets;
+            user.get().setPaidTickets(paidTickets);
             userSave(user.get());
             return paymentHistory.getId();
         } else {
@@ -355,7 +355,7 @@ public class UserService {
 
         return paymentService.returnPaymentHistory(user.getId())
                 .stream().map(history -> {
-                    return new PaymentHistoryResponse(history.getPaid_time(), history.getTicket(), history.getPrice());
+                    return new PaymentHistoryResponse(history.getPaidTime(), history.getTicket(), history.getPrice());
                 }).toList();
     }
 
@@ -400,8 +400,8 @@ public class UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
 
-        int tickets = user.getFree_tickets() + 1;
-        user.setFree_tickets(tickets);
+        int tickets = user.getFreeTickets() + 1;
+        user.setFreeTickets(tickets);
         userSave(user);
         return tickets;
     }
@@ -413,7 +413,7 @@ public class UserService {
     public void changeNickName(String user_name, String nick_name) {
         User user = userRepository.findByUsername(user_name)
                 .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
-        user.setNick_name(nick_name);
+        user.setNickName(nick_name);
         userRepository.save(user);
     }
 
@@ -422,7 +422,7 @@ public class UserService {
         if (user.isEmpty()) {
             throw new RuntimeException("닉네임을 설정해주세요.");
         } else {
-            return user.get().getNick_name();
+            return user.get().getNickName();
         }
     }
 

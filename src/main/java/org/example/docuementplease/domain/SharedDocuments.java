@@ -10,10 +10,10 @@ import java.util.List;
 @AllArgsConstructor
 public class SharedDocuments {
     private String name;
-    private String user_name;
+    private String userName;
     private String target;
     private String content;
-    private int like_count;
+    private int likeCount;
     private String type;
     private List<Comment> comments;
 }
