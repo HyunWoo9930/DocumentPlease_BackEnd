@@ -97,6 +97,13 @@ public class DocumentService {
         Documents document = documentRepository.findById(doc_id).orElseThrow(() -> new NotFoundException("문서가 존재하지 않습니다."));
         return new DocumentInputResponse(document.getType(), document.getTarget(), document.getAmount(), document.getText());
     }
+
+    public void updateDocumentName(String doc_name, String user_name, String new_doc_name) {
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        Documents documents = documentRepository.findDocumentsByNameAndUser_Id(doc_name, user.getId()).orElseThrow(() -> new NotFoundException("문서가 존재하지 않습니다."));
+        documents.setName(new_doc_name);
+        documentSave(documents);
+    }
 }
 
 

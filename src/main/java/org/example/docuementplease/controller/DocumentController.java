@@ -91,4 +91,18 @@ public class DocumentController {
         }
     }
 
+    @PutMapping("/update_document_name")
+    public ResponseEntity<?> updateDocumentName(
+            @RequestParam(value = "doc_name") String doc_name,
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "new_doc_name") String new_doc_name
+    ) {
+        try {
+            documentService.updateDocumentName(doc_name, user_name, new_doc_name);
+            return ResponseEntity.ok("수정이 완료되었습니다.");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }
