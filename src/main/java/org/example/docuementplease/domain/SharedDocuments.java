@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter @Setter
 @AllArgsConstructor
 public class SharedDocuments {
@@ -13,4 +15,5 @@ public class SharedDocuments {
     private String content;
     private int like_count;
     private String type;
+    private List<Comment> comments;
 }
