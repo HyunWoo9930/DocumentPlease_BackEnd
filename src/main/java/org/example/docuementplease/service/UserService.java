@@ -440,7 +440,7 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(new_password));
             userRepository.save(user);
         } else {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다");
+            throw new RuntimeException("기존 비밀번호가 일치하지 않습니다");
         }
     }
 

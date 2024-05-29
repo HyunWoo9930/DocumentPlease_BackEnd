@@ -3,10 +3,7 @@ package org.example.docuementplease.controller;
 import org.example.docuementplease.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.webjars.NotFoundException;
 
 @RestController
@@ -41,6 +38,30 @@ public class CommentController {
             commentService.updateComment(comment_id, new_content);
             return ResponseEntity.ok("업데이트 성공");
         } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update_comment_like")
+    public ResponseEntity<?> updateCommentLike(
+            @RequestParam(value = "comment_id") Long comment_id
+    ) {
+        try {
+            commentService.updateCommentLike(comment_id);
+            return ResponseEntity.ok("좋아요 추가 완료");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete_comment")
+    public ResponseEntity<?> deleteComment(
+            @RequestParam(value = "comment_id") Long comment_id
+    ) {
+        try {
+            commentService.deleteComment(comment_id);
+            return ResponseEntity.ok("삭제 성공");
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

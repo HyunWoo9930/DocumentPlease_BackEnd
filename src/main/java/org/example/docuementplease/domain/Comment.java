@@ -20,6 +20,7 @@ public class Comment {
     private Long id;
     private String content;
     private String userName;
+    private int likeCount;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

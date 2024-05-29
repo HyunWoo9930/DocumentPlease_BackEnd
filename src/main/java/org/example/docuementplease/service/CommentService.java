@@ -38,4 +38,18 @@ public class CommentService {
         comment.setContent(new_content);
         commentRepository.save(comment);
     }
+
+    public void updateCommentLike(Long comment_id) {
+        Comment comment = commentRepository.findById(comment_id).orElseThrow(() -> new NotFoundException("댓글이 없습니다."));
+        int like = comment.getLikeCount() + 1;
+        comment.setLikeCount(like);
+        commentRepository.save(comment);
+    }
+
+    public void deleteComment(Long comment_id) {
+        commentRepository.deleteById(comment_id);
+        if(commentRepository.findById(comment_id).isPresent()) {
+            throw new RuntimeException("삭제되지 않았습니다.");
+        }
+    }
 }
