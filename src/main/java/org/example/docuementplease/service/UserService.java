@@ -43,6 +43,8 @@ public class UserService {
     public User registerNewUserAccount(User user) {
         List<Level> levels = new ArrayList<>(Arrays.asList(Level.values()));
         user.setLevels(levels);
+        List<LikeLevel> likeLevels = new ArrayList<>(Arrays.asList(LikeLevel.values()));
+        user.setLikeLevels(likeLevels);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -377,6 +379,19 @@ public class UserService {
         }
     }
 
+    public List<Boolean> getUserLikeLevels(String user_name) {
+        Optional<User> user = userRepository.findByUsername(user_name);
+        if (user.isPresent()) {
+            List<Boolean> isCleared = new ArrayList<>();
+            for (LikeLevel level : LikeLevel.values()) {
+                isCleared.add(user.get().getLikeLevels().contains(level));
+            }
+            return isCleared;
+        } else {
+            throw new NotFoundException("유저가 존재하지 않습니다.");
+        }
+    }
+
     @Transactional
     public void updateUserLevels(String user_name, Level levelToRemove) {
         User user = userRepository.findByUsername(user_name)
@@ -393,6 +408,25 @@ public class UserService {
         }
 
         user.removeLevel(levelToRemove);
+        userSave(user);
+    }
+
+    @Transactional
+    public void updateUserLikeLevels(String user_name, LikeLevel likeLevelToRemove) {
+        User user = userRepository.findByUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다."));
+
+        if(!user.getLikeLevels().contains(likeLevelToRemove)) {
+            throw new RuntimeException("이미 제거된 레벨입니다!");
+        }
+
+        for (LikeLevel likeLevel : LikeLevel.values()) {
+            if (likeLevel.compareTo(likeLevelToRemove) < 0 && user.getLevels().contains(likeLevel)) {
+                throw new LowerLevelExistException("제거하려는 레벨보다 낮은 레벨이 존재합니다.");
+            }
+        }
+
+        user.removeLikeLevel(likeLevelToRemove);
         userSave(user);
     }
 

@@ -35,6 +35,11 @@ public class User {
     @Schema(hidden = true)
     private List<Level> levels = new ArrayList<>();
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @Schema(hidden = true)
+    private List<LikeLevel> likeLevels = new ArrayList<>();
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "user_id")
     @JsonIgnore
@@ -56,6 +61,9 @@ public class User {
         levels.add(Level.LEVEL3);
         levels.add(Level.LEVEL4);
         levels.add(Level.LEVEL5);
+        likeLevels.add(LikeLevel.LEVEL1);
+        likeLevels.add(LikeLevel.LEVEL2);
+        likeLevels.add(LikeLevel.LEVEL3);
     }
 
     public void addLevel(Level level) {
@@ -64,11 +72,24 @@ public class User {
         }
     }
 
+    public void addLikeLevel(LikeLevel likeLevel) {
+        if (!likeLevels.contains(likeLevel)) {
+            likeLevels.add(likeLevel);
+        }
+    }
+
     public void removeLevel(Level level) {
         levels.remove(level);
     }
 
+    public void removeLikeLevel(LikeLevel likeLevel) {
+        likeLevels.remove(likeLevel);
+    }
+
     public boolean hasLevel(Level level) {
         return levels.contains(level);
+    }
+    public boolean hasLikeLevel(LikeLevel likeLevel) {
+        return likeLevels.contains(likeLevel);
     }
 }

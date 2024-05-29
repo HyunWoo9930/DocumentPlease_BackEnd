@@ -453,6 +453,18 @@ public class UserController {
         }
     }
 
+    @GetMapping("/get_like_levels")
+    public ResponseEntity<?> getUserLikeLevels(
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            List<Boolean> likeLevels = userService.getUserLikeLevels(user_name);
+            return ResponseEntity.ok(likeLevels);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     @PutMapping("/update_levels")
     public ResponseEntity<?> updateUserLevels(
             @RequestParam(value = "user_name") String user_name,
@@ -460,6 +472,19 @@ public class UserController {
     ) {
         try {
             userService.updateUserLevels(user_name, level);
+            return ResponseEntity.ok("성공적으로 삭제완료했습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/update_like_levels")
+    public ResponseEntity<?> updateUserLikeLevels(
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "level") LikeLevel likeLevel
+    ) {
+        try {
+            userService.updateUserLikeLevels(user_name, likeLevel);
             return ResponseEntity.ok("성공적으로 삭제완료했습니다.");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
