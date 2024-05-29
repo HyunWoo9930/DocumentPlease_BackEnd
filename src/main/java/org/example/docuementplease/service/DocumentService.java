@@ -1,11 +1,9 @@
 package org.example.docuementplease.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.docuementplease.domain.DocumentInputResponse;
-import org.example.docuementplease.domain.Documents;
-import org.example.docuementplease.domain.SharedDocuments;
-import org.example.docuementplease.domain.User;
+import org.example.docuementplease.domain.*;
 import org.example.docuementplease.repository.DocumentRepository;
+import org.example.docuementplease.repository.RefundedDocumentRepository;
 import org.example.docuementplease.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -19,10 +17,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DocumentService {
     private final DocumentRepository documentRepository;
 
+    private final RefundedDocumentRepository refundedDocumentRepository;
+
     private final UserRepository userRepository;
 
-    public DocumentService(DocumentRepository documentRepository, UserRepository userRepository) {
+    public DocumentService(DocumentRepository documentRepository, RefundedDocumentRepository refundedDocumentRepository, UserRepository userRepository) {
         this.documentRepository = documentRepository;
+        this.refundedDocumentRepository = refundedDocumentRepository;
         this.userRepository = userRepository;
     }
 
@@ -113,6 +114,22 @@ public class DocumentService {
             likes.addAndGet(documents.getLike_count());
         }));
         return likes;
+    }
+
+    public void saveRefundedDoc(String content, String sendContent, String user_name) {
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        RefundedDocument refundedDocument = new RefundedDocument();
+        refundedDocument.setUser(user);
+        refundedDocument.setContent(content);
+        refundedDocument.setSendContent(sendContent);
+        RefundedDocument save = refundedDocumentRepository.save(refundedDocument);
+        if(refundedDocumentRepository.findById(save.getId()).isEmpty()) {
+            throw new RuntimeException("저장실패");
+        }
+    }
+
+    public List<RefundedDocument> getRefundedDocument() {
+        return refundedDocumentRepository.findAll();
     }
 }
 

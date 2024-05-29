@@ -117,4 +117,27 @@ public class DocumentController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @Operation(summary = "환불 문서 내용 저장 API", description = "환불 문서 내용 저장 API 입니다.")
+    @PostMapping("/save_refunded_doc")
+    public ResponseEntity<?> saveDocOutput(
+            @RequestParam(value = "send_content") String send_content,
+            @RequestParam(value = "content") String content,
+            @RequestParam(value = "user_name") String user_name
+    ) {
+        try {
+            documentService.saveRefundedDoc(content, send_content, user_name);
+            return ResponseEntity.ok().body("성공적으로 저장하였습니다.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "환불 문서들 반환 API")
+    @GetMapping("/get_refunded_doc")
+    public ResponseEntity<?> getRefundedDoc() {
+        return ResponseEntity.ok(documentService.getRefundedDocument());
+    }
+
+
 }
