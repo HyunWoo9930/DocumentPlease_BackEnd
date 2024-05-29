@@ -12,6 +12,7 @@ import org.webjars.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -103,6 +104,15 @@ public class DocumentService {
         Documents documents = documentRepository.findDocumentsByNameAndUser_Id(doc_name, user.getId()).orElseThrow(() -> new NotFoundException("문서가 존재하지 않습니다."));
         documents.setName(new_doc_name);
         documentSave(documents);
+    }
+
+    public AtomicInteger getTotalLikes(String user_name) {
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        AtomicInteger likes = new AtomicInteger();
+        user.getDocuments().forEach((documents -> {
+            likes.addAndGet(documents.getLike_count());
+        }));
+        return likes;
     }
 }
 

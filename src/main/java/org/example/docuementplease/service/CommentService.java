@@ -28,7 +28,7 @@ public class CommentService {
 
         Comment comment = new Comment();
         comment.setContent(content);
-        comment.setUserName(user.getNick_name());
+        comment.setUserName(user.getUsername());
         comment.setDocuments(documents);
         commentRepository.save(comment);
     }
