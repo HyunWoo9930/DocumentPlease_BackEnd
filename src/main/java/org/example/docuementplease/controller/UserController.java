@@ -466,5 +466,22 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "비밀번호 변경 API", description = "비밀번호가 일치하는지 확인하고 변경해주는 API")
+    @PutMapping("/update_password")
+    public ResponseEntity<?> putChangePassword(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
+            @RequestParam(value = "new_password") String new_password
+    ){
+        try{
+            userService.putChangePassword(username, password, new_password);
+            return ResponseEntity.status(HttpStatus.OK).body("비밀번호가 변경하였습니다.");
+        }
+        catch (RuntimeException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+    }
+
 }
 

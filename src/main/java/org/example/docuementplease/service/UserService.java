@@ -433,6 +433,17 @@ public class UserService {
         }
     }
 
+    public void putChangePassword(String user_name,String password, String new_password) {
+        User user = userRepository.findByUsername(user_name)
+                .orElseThrow(() -> new RuntimeException("user를 찾지 못하였습니다."));
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(new_password));
+            userRepository.save(user);
+        } else {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다");
+        }
+    }
+
 }
 
 
