@@ -131,6 +131,13 @@ public class DocumentService {
     public List<RefundedDocument> getRefundedDocument() {
         return refundedDocumentRepository.findAll();
     }
+
+    public long getDocId(String user_name, String doc_name) {
+        User user = userRepository.findByUsername(user_name).orElseThrow(() -> new NotFoundException("유저가 존재하지 않습니다."));
+        Documents documents = documentRepository.findDocumentsByNameAndUser_Id(doc_name, user.getId()).orElseThrow(() -> new NotFoundException("문서가 존재하지 않습니다."));
+        return documents.getId();
+
+    }
 }
 
 

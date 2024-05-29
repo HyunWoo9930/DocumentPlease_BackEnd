@@ -139,5 +139,19 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.getRefundedDocument());
     }
 
+    @Operation(summary = "doc_id 반환 API")
+    @GetMapping("/get_doc_id")
+    public ResponseEntity<?> getDocId(
+            @RequestParam(value = "user_name") String user_name,
+            @RequestParam(value = "doc_name") String doc_name
+    ) {
+        try {
+            long docId = documentService.getDocId(user_name, doc_name);
+            return ResponseEntity.ok(docId);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }
