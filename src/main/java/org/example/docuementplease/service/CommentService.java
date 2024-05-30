@@ -59,4 +59,9 @@ public class CommentService {
         List<Comment> comments = commentRepository.findByDocumentsId(doc_id);
         return comments;
     }
+
+    public long getCommentLikes(Long comment_id) {
+        long comments = commentRepository.findById(comment_id).orElseThrow(() -> new NotFoundException("댓글을 찾을수 없습니다.")).getLikeCount();
+        return comments;
+    }
 }

@@ -78,4 +78,13 @@ public class CommentController {
         List<Comment> comment = commentService.getDocumentComment(doc_id);
         return ResponseEntity.ok(comment);
     }
+
+    @Operation(description = "comment id를 주면, 댓글의 좋아요 개수를 get 할 수 있는 API")
+    @GetMapping("/get_comment_likes")
+    public ResponseEntity<?> getCommentLikes(
+            @RequestParam(value = "comment_id") Long comment_id
+    ) {
+        long commentLikes = commentService.getCommentLikes(comment_id);
+        return ResponseEntity.ok(commentLikes);
+    }
 }
