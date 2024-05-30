@@ -94,7 +94,7 @@ public class UserService {
             if (tickets < 0) {
                 throw new RuntimeException("잔여 티켓 수가 0보다 작습니다.");
             }
-            user.get().setDaily_tickets(tickets);
+            user.get().setPaidTickets(tickets);
             userSave(user.get());
             return tickets;
         }
