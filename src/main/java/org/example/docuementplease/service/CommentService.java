@@ -9,6 +9,8 @@ import org.example.docuementplease.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.util.List;
+
 @Service
 public class CommentService {
 
@@ -51,5 +53,10 @@ public class CommentService {
         if(commentRepository.findById(comment_id).isPresent()) {
             throw new RuntimeException("삭제되지 않았습니다.");
         }
+    }
+
+    public List<Comment> getDocumentComment(Long doc_id) {
+        List<Comment> comments = commentRepository.findByDocumentsId(doc_id);
+        return comments;
     }
 }

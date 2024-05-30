@@ -1,10 +1,14 @@
 package org.example.docuementplease.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import org.example.docuementplease.domain.Comment;
 import org.example.docuementplease.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.webjars.NotFoundException;
+
+import java.util.List;
 
 @RestController
 public class CommentController {
@@ -64,5 +68,14 @@ public class CommentController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @Operation(description = "doc id를 주면, 해당 문서의 댓글을 전부 반환하는 API")
+    @GetMapping("/get_document_comments")
+    public ResponseEntity<?> getDocumentComments(
+            @RequestParam(value = "doc_id") Long doc_id
+    ) {
+        List<Comment> comment = commentService.getDocumentComment(doc_id);
+        return ResponseEntity.ok(comment);
     }
 }
